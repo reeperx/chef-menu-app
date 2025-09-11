@@ -1,9 +1,20 @@
 import { Colors } from "@/utils/Colors";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, View } from "react-native";
+import { useRouter } from "expo-router";
 
 export default function SplashScreen() {
+
+  const router = useRouter();
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      router.replace("/signup");
+    }, 2000); // 2 seconds
+    return () => clearTimeout(timeout);
+  }, [router]);
+
   return (
     <View
       style={{
@@ -34,6 +45,7 @@ export default function SplashScreen() {
           }}
           source={require("../../assets/images/logo.png")}
           resizeMode="contain"
+       
         />
       </View>
     </View>
