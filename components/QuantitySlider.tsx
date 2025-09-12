@@ -6,7 +6,7 @@ export default function QuantitySlider({
   value,
   setValue,
   min = 1,
-  max = 10,
+  max = 15,
 }: {
   value: number;
   setValue: (v: number) => void;
