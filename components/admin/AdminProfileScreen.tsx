@@ -140,7 +140,7 @@ export default function AdminProfileScreen() {
                     style={styles.actionCard}
                     onPress={() =>
                       router.push({
-                        pathname: "/admin/menu",
+                        pathname: "/profile/settings",
                       })
                     }
                   >

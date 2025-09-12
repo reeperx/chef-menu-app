@@ -7,7 +7,6 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -20,10 +19,9 @@ export interface UserProfileProps {
 
 export default function UserProfile({ isAdmin = false }: UserProfileProps) {
   const router = useRouter();
-  const [editMode, setEditMode] = useState(false);
   const [image, setImage] = useState<string | null>(null);
-  const [name, setName] = useState("User");
-  const [email, setEmail] = useState("user@example.com");
+  const [name] = useState("User");
+  const [email] = useState("user@example.com");
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -62,18 +60,6 @@ export default function UserProfile({ isAdmin = false }: UserProfileProps) {
     router.replace("/login");
   };
 
-  const toggleEditMode = () => {
-    if (editMode) {
-      // Save changes
-      Toast.show({
-        type: "success",
-        text1: "Profile updated",
-        text2: "Your profile has been updated successfully.",
-      });
-    }
-    setEditMode(!editMode);
-  };
-
   return (
     <ScrollView style={styles.container}>
       {/* Profile Header */}
@@ -92,16 +78,7 @@ export default function UserProfile({ isAdmin = false }: UserProfileProps) {
           </View>
         </TouchableOpacity>
 
-        {editMode ? (
-          <TextInput
-            style={styles.nameInput}
-            value={name}
-            onChangeText={setName}
-            placeholder="Your name"
-          />
-        ) : (
-          <Text style={styles.name}>{name}</Text>
-        )}
+        <Text style={styles.name}>{name}</Text>
         <View style={styles.roleContainer}>
           <Ionicons name="person" size={18} color={Colors.primary} />
           <Text style={styles.role}>User</Text>
@@ -113,45 +90,33 @@ export default function UserProfile({ isAdmin = false }: UserProfileProps) {
         <Text style={styles.sectionTitle}>Account Information</Text>
         <View style={styles.infoItem}>
           <Ionicons name="mail" size={24} color={Colors.primary} />
-          {editMode ? (
-            <TextInput
-              style={styles.infoInput}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Your email"
-              keyboardType="email-address"
-            />
-          ) : (
-            <Text style={styles.infoText}>{email}</Text>
-          )}
+          <Text style={styles.infoText}>{email}</Text>
         </View>
       </View>
 
       {/* User Actions */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Actions</Text>
-        <TouchableOpacity style={styles.actionButton} onPress={toggleEditMode}>
-          <Ionicons
-            name={editMode ? "save" : "create"}
-            size={24}
-            color={Colors.primary}
-          />
-          <Text style={styles.actionButtonText}>
-            {editMode ? "Save Changes" : "Edit Profile"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() =>
+            router.push({
+              pathname: "/profile/settings",
+            })
+          }
+        >
           <Ionicons name="settings" size={24} color={Colors.primary} />
           <Text style={styles.actionButtonText}>Settings</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton}>
-          <Ionicons name="heart" size={24} color={Colors.primary} />
-          <Text style={styles.actionButtonText}>Favorites</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() =>
+            router.push({
+              pathname: "/profile/orders",
+            })
+          }
+        >
           <Ionicons name="receipt" size={24} color={Colors.primary} />
           <Text style={styles.actionButtonText}>Order History</Text>
         </TouchableOpacity>
@@ -205,16 +170,6 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     marginBottom: 8,
   },
-  nameInput: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: Colors.primary,
-    marginBottom: 8,
-    textAlign: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primary,
-    paddingBottom: 4,
-  },
   roleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -251,14 +206,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     flex: 1,
-  },
-  infoInput: {
-    fontSize: 16,
-    color: "#333",
-    flex: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.primary,
-    paddingBottom: 4,
   },
   actionButton: {
     flexDirection: "row",

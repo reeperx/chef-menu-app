@@ -565,7 +565,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    position: "relative",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
   },
   modalContent: {
     backgroundColor: "white",
@@ -573,6 +577,7 @@ const styles = StyleSheet.create({
     width: "90%",
     maxHeight: "90%",
     padding: 0, // Removed padding to allow header to go edge-to-edge
+    position: "relative",
     overflow: "hidden", // Ensure content doesn't overflow rounded corners
     elevation: 5,
     shadowColor: "#000",

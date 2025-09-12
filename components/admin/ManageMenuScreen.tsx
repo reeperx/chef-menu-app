@@ -58,10 +58,14 @@ export default function ManageMenuScreen() {
       </View>
 
       {/* Add Menu Item Modal */}
-      <AddMenuItemModal
-        visible={isAddModalVisible}
-        onClose={() => setIsAddModalVisible(false)}
-      />
+      {isAddModalVisible && (
+        <View style={StyleSheet.absoluteFill}>
+          <AddMenuItemModal
+            visible={isAddModalVisible}
+            onClose={() => setIsAddModalVisible(false)}
+          />
+        </View>
+      )}
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
