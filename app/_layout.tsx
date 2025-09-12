@@ -10,11 +10,11 @@ export default function RootLayout() {
           headerShown: false,
         }}
       >
-        {/* Splash, Login, Signup, Home screens */}
         <Stack.Screen name="splash" />
         <Stack.Screen name="login" />
         <Stack.Screen name="signup" />
-        <Stack.Screen name="home" />
+        {/* Home now points to the tab navigator */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <Toast />
     </>

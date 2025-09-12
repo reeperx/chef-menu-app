@@ -56,7 +56,7 @@ export default function SignupScreen() {
           text1: `Welcome back, ${username}!`,
           text2: "Your account has been created.",
         });
-        router.replace("/home");
+        router.replace("/(tabs)");
       } else {
         setErrors({ username: "Username or email already exists." });
         Toast.show({

@@ -49,7 +49,7 @@ export default function LoginScreen() {
           text1: `Welcome, ${user.role === "admin" ? "Admin" : "User"}!`,
           text2: "Login successful.",
         });
-        router.replace("/home");
+        router.replace("/(tabs)");
       } else {
         setErrors({ password: "Invalid username or password." });
         Toast.show({
