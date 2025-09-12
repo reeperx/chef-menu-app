@@ -72,7 +72,7 @@ export default function CartScreen() {
       cartStore.setCart = prevSetCart;
       cartStore.clearCart = prevClearCart;
     };
-  }, []);
+  }, [cart]);
   // Assign a stable sticker type per meal
   const STICKERS = ["Hot", "Spicy", "Mild", "Special"];
   const [stickers] = useState<{ [id: string]: string }>(() => {
@@ -153,7 +153,8 @@ export default function CartScreen() {
                             Lunch: 0.15,
                             Dinner: 0.2,
                           };
-                          const discount = categoryDiscounts[item.category] || 0;
+                          const discount =
+                            categoryDiscounts[item.category] || 0;
                           const discountedPrice = item.price * (1 - discount);
                           return (
                             <>
@@ -201,11 +202,13 @@ export default function CartScreen() {
                 <TouchableOpacity
                   style={styles.deleteBtn}
                   onPress={() => {
-                    const updated = cart.filter((m) => m.id !== item.id);
+                    const updated = cartStore.cart.filter(
+                      (m) => m.id !== item.id
+                    );
                     const newQuantities = { ...quantities };
                     delete newQuantities[item.id];
                     setQuantities(newQuantities);
-                    setCart(updated);
+                    cartStore.setCart(updated);
                   }}
                 >
                   <Ionicons name="trash" size={16} color="#fff" />
@@ -260,7 +263,9 @@ export default function CartScreen() {
           {cart.length > 0 && (
             <TouchableOpacity
               style={styles.deleteAllBtn}
-              onPress={() => setCart([])}
+              onPress={() => {
+                cartStore.clearCart();
+              }}
             >
               <Text style={styles.deleteAllBtnText}>Delete All Orders</Text>
             </TouchableOpacity>
@@ -437,7 +442,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     position: "absolute",
-    top: 90, 
+    top: 90,
     right: 8,
   },
   deleteBtnText: {

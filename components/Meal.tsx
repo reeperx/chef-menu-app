@@ -72,6 +72,20 @@ export function MealCard({ meal }: { meal: Meal }) {
   const [inCart, setInCart] = React.useState(() =>
     cartStore.cart.some((m) => m.id === meal.id)
   );
+
+  // Listen for cart clear
+  React.useEffect(() => {
+    const origClearCart = cartStore.clearCart;
+    cartStore.clearCart = () => {
+      setInCart(false);
+      if (typeof origClearCart === "function") {
+        origClearCart();
+      }
+    };
+    return () => {
+      cartStore.clearCart = origClearCart;
+    };
+  }, []);
   React.useEffect(() => {
     // Patch cartStore.setCart to update badge and inCart
     const origSetCart = cartStore.setCart;
@@ -84,10 +98,20 @@ export function MealCard({ meal }: { meal: Meal }) {
       )
         origSetCart(meals);
     };
+
+    // Add interval to check cart state regularly
+    const interval = setInterval(() => {
+      const isItemInCart = cartStore.cart.some((m) => m.id === meal.id);
+      if (isItemInCart !== inCart) {
+        setInCart(isItemInCart);
+      }
+    }, 300);
+
     return () => {
       cartStore.setCart = origSetCart;
+      clearInterval(interval);
     };
-  }, [meal.id]);
+  }, [meal.id, inCart]);
   // Discount logic: match MealViewScreen
   const categoryDiscounts: Record<string, number> = {
     Breakfast: 0.1,
