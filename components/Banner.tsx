@@ -1,14 +1,53 @@
-import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
 import { responsiveHeight } from "react-native-responsive-dimensions";
 
+const bannerImages = [
+  require("../assets/images/banner.png"),
+  require("../assets/images/banner.png"),
+  require("../assets/images/banner.png"),
+];
+
 export default function Banner() {
+  const flatListRef = useRef<FlatList>(null);
+  const { width } = Dimensions.get("window");
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const next = prev + 1 >= bannerImages.length ? 0 : prev + 1;
+        // Use scrollToOffset for smoother animation
+        flatListRef.current?.scrollToOffset({
+          offset: next * width,
+          animated: true,
+        });
+        return next;
+      });
+    }, 8000); // 7 seconds for slower slide
+    return () => clearInterval(interval);
+  }, [width]);
+
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.bannerImage}
-        source={require("../assets/images/banner.png")}
-        resizeMode="cover"
+      <FlatList
+        ref={flatListRef}
+        data={bannerImages}
+        keyExtractor={(_, idx) => idx.toString()}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        renderItem={({ item }) => (
+          <Image
+            style={[styles.bannerImage, { width }]}
+            source={item}
+            resizeMode="cover"
+          />
+        )}
+        onMomentumScrollEnd={(e) => {
+          const idx = Math.round(e.nativeEvent.contentOffset.x / width);
+          setCurrentIndex(idx);
+        }}
       />
     </View>
   );
@@ -17,11 +56,10 @@ export default function Banner() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginTop: 20, 
+    marginTop: 20,
     overflow: "hidden",
   },
   bannerImage: {
-    width: "100%",
     height: responsiveHeight(15),
     borderRadius: 10,
   },

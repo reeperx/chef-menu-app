@@ -10,7 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Filter, { VerticalMealList } from "../../components/Filter";
+import Filter from "../../components/Filter";
+import { VerticalMealList } from "../../components/Meal";
 import { meals } from "../../utils/data";
 
 const styles = StyleSheet.create({
@@ -92,7 +93,6 @@ export default function HomeTab() {
       : meals.filter((m) => m.category.toLowerCase() === selectedFilter);
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>
-      ...
       {/* Logo */}
       <Image
         tintColor={"#f16e03ff"}
@@ -117,7 +117,11 @@ export default function HomeTab() {
       <Banner />
       {/* Filter Chips */}
       <View style={{ marginTop: 10 }}>
-        <Filter onFilterChange={setSelectedFilter} />
+        <Filter
+          selected={selectedFilter}
+          setSelected={setSelectedFilter}
+          onFilterChange={setSelectedFilter}
+        />
       </View>
       {/* Meal Cards Vertical Scroll */}
       <View style={{ marginTop: 10, flex: 1 }}>

@@ -24,3 +24,5 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    install also:
    npm install --save react-native-responsive-dimensions
    npm i react-native-toast-message
+   npm install expo-speech expo-av expo-permissions
+   npm install @jamsch/expo-speech-recognition
