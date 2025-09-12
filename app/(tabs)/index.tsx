@@ -1,3 +1,5 @@
+import Banner from "@/components/Banner";
+import Searchbar from "@/components/Searchbar";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -104,9 +106,10 @@ export default function HomeTab() {
       </View>
 
       {/* searchbar */}
-      <View>
-        <Text>Search</Text>
-      </View>
+      <Searchbar />
+
+      {/* banner */}
+      <Banner />
 
       {/* Floating Action Button */}
       <TouchableOpacity
