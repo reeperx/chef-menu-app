@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { cartStore } from "../../components/CartScreen";
 import { favoriteStore } from "../../components/FavoriteScreen";
 import { Colors } from "../../utils/Colors";
 
@@ -58,6 +59,41 @@ const styles = StyleSheet.create({
   },
 });
 
+function CartTabIcon({
+  color,
+  size,
+  focused,
+}: {
+  color: string;
+  size: number;
+  focused: boolean;
+}) {
+  const [count, setCount] = React.useState(cartStore.cart.length);
+  React.useEffect(() => {
+    cartStore.setCart = (meals) => {
+      cartStore.cart = meals;
+      setCount(meals.length);
+    };
+    cartStore.clearCart = () => {
+      cartStore.cart = [];
+      setCount(0);
+    };
+  }, []);
+  return (
+    <View>
+      <Ionicons
+        name={focused ? "cart" : "cart-outline"}
+        size={size}
+        color={color}
+      />
+      {count > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{count}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
 export default function TabsLayout() {
   return (
     <Tabs

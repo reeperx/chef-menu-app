@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Colors } from "../utils/Colors";
 import type { Meal } from "../utils/data";
+import { cartStore } from "./CartScreen";
 import { favoriteStore } from "./FavoriteScreen";
 
 const mealCardStyles = StyleSheet.create({
@@ -67,7 +68,19 @@ const mealCardStyles = StyleSheet.create({
 });
 
 export function MealCard({ meal }: { meal: Meal }) {
-  const [inCart, setInCart] = React.useState(false);
+  const [inCart, setInCart] = React.useState(() =>
+    cartStore.cart.some((m) => m.id === meal.id)
+  );
+  const toggleCart = () => {
+    let updated;
+    if (inCart) {
+      updated = cartStore.cart.filter((m) => m.id !== meal.id);
+    } else {
+      updated = [...cartStore.cart, meal];
+    }
+    cartStore.setCart(updated);
+    setInCart(!inCart);
+  };
   const [imgError, setImgError] = React.useState(false);
   const navigation = useNavigation();
   const fallbackImage = require("../assets/images/partial-react-logo.png");
@@ -155,7 +168,7 @@ export function MealCard({ meal }: { meal: Meal }) {
               borderWidth: 1,
               borderColor: Colors.primary,
             }}
-            onPress={() => setInCart((prev) => !prev)}
+            onPress={toggleCart}
           >
             <Ionicons
               name={inCart ? "cart" : "cart-outline"}

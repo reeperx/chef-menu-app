@@ -15,6 +15,10 @@ export default function RootLayout() {
         <Stack.Screen name="signup" />
         {/* Home now points to the tab navigator */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="Checkout"
+          options={{ headerShown: true, title: "Checkout" }}
+        />
       </Stack>
       <Toast />
     </>
