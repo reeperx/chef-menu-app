@@ -5,6 +5,9 @@ export interface User {
   email: string;
   password: string;
   role: UserRole;
+  profileImage?: string;
+  phone?: string;
+  address?: string;
 }
 
 // Predefined users

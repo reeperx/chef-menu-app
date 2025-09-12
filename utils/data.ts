@@ -2,11 +2,22 @@
 export interface Meal {
   id: string;
   name: string;
+  subtitle?: string;
   category: "Breakfast" | "Lunch" | "Dinner";
   price: number; // in ZAR
+  discountedPrice?: number;
   image: string;
   description: string;
   rating: number; // 1-5
+  isSpicy: boolean;
+  ingredients?: string[];
+  nutritionalInfo?: {
+    calories?: number;
+    protein?: number;
+    carbs?: number;
+    fats?: number;
+  };
+  isAvailable?: boolean;
 }
 
 export const meals: Meal[] = [
@@ -20,6 +31,23 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Fluffy pancakes served with maple syrup and fresh berries.",
     rating: 4.5,
+    isSpicy: false,
+    subtitle: "Our Signature Breakfast",
+    ingredients: [
+      "Flour",
+      "Eggs",
+      "Milk",
+      "Butter",
+      "Maple Syrup",
+      "Fresh Berries",
+    ],
+    nutritionalInfo: {
+      calories: 450,
+      protein: 8,
+      carbs: 65,
+      fats: 12,
+    },
+    isAvailable: true,
   },
   {
     id: "breakfast-2",
@@ -31,6 +59,8 @@ export const meals: Meal[] = [
     description:
       "Sourdough toast topped with smashed avocado and poached eggs.",
     rating: 4.7,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "breakfast-3",
@@ -41,6 +71,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=400&q=80",
     description: "Three-egg omelette with cheese, ham, mushrooms, and peppers.",
     rating: 4.6,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "breakfast-4",
@@ -51,6 +83,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80",
     description: "Layers of Greek yogurt, granola, and mixed berries.",
     rating: 4.3,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "breakfast-5",
@@ -61,6 +95,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=400&q=80",
     description: "Brioche bread dipped in egg and fried, served with syrup.",
     rating: 4.4,
+    isSpicy: false,
+    isAvailable: true,
   },
   // Lunch
   {
@@ -73,6 +109,8 @@ export const meals: Meal[] = [
     description:
       "Grilled chicken breast on romaine lettuce with Caesar dressing.",
     rating: 4.2,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "lunch-2",
@@ -83,6 +121,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=400&q=80",
     description: "Juicy beef patty with cheese, lettuce, tomato, and fries.",
     rating: 4.6,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "lunch-3",
@@ -93,6 +133,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1542281286-9e0a16bb7366?auto=format&fit=crop&w=400&q=80",
     description: "Classic pizza with tomato, mozzarella, and fresh basil.",
     rating: 4.8,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "lunch-4",
@@ -103,6 +145,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Whole wheat wrap filled with grilled vegetables and hummus.",
     rating: 4.1,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "lunch-5",
@@ -113,6 +157,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Crispy battered fish served with fries and tartar sauce.",
     rating: 4.5,
+    isSpicy: false,
+    isAvailable: true,
   },
   // Dinner
   {
@@ -124,6 +170,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1514512364185-4c2b678557dd?auto=format&fit=crop&w=400&q=80",
     description: "Grilled sirloin steak with creamy mashed potatoes.",
     rating: 4.9,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "dinner-2",
@@ -134,6 +182,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Classic Italian pasta with rich beef and tomato sauce.",
     rating: 4.7,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "dinner-3",
@@ -144,6 +194,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Creamy butter chicken served with basmati rice.",
     rating: 4.8,
+    isSpicy: true,
+    isAvailable: true,
   },
   {
     id: "dinner-4",
@@ -154,6 +206,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Salmon fillet grilled to perfection with lemon butter.",
     rating: 4.6,
+    isSpicy: false,
+    isAvailable: true,
   },
   {
     id: "dinner-5",
@@ -164,6 +218,8 @@ export const meals: Meal[] = [
       "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80",
     description: "Mixed vegetables stir-fried in a savory sauce.",
     rating: 4.3,
+    isSpicy: true,
+    isAvailable: true,
   },
 ];
 

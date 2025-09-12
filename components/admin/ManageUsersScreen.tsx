@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -11,11 +12,16 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAdminStore } from "../../store/adminStore";
 import { Colors } from "../../utils/Colors";
+import { User } from "../../utils/virtualUsers";
 import Toast from "../Toast";
+import EditUserModal from "./EditUserModal";
 
 export default function ManageUsersScreen() {
   const router = useRouter();
-  const { users } = useAdminStore();
+  const { users, deleteUser } = useAdminStore();
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -57,20 +63,67 @@ export default function ManageUsersScreen() {
                   { backgroundColor: Colors.primary },
                 ]}
                 onPress={() => {
-                  Toast.show({
-                    type: "info",
-                    text1: "Coming Soon",
-                    text2: "Edit user functionality will be available soon.",
-                  });
+                  setSelectedUser(item);
+                  setShowEditModal(true);
                 }}
               >
                 <Ionicons name="create" size={20} color="#fff" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.actionButton, { backgroundColor: "#dc3545" }]}
+                onPress={() => {
+                  Alert.alert(
+                    "Confirm Delete",
+                    `Are you sure you want to delete ${item.username}?`,
+                    [
+                      {
+                        text: "Cancel",
+                        style: "cancel",
+                      },
+                      {
+                        text: "Delete",
+                        style: "destructive",
+                        onPress: () => {
+                          const success = deleteUser(item.username);
+                          if (success) {
+                            Toast.show({
+                              type: "success",
+                              text1: "Success",
+                              text2: "User deleted successfully",
+                            });
+                          } else {
+                            Toast.show({
+                              type: "error",
+                              text1: "Error",
+                              text2: "Failed to delete user",
+                            });
+                          }
+                        },
+                      },
+                    ]
+                  );
+                }}
+              >
+                <Ionicons name="trash" size={20} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
         )}
         contentContainerStyle={styles.listContent}
       />
+
+      {/* Edit User Modal */}
+      {selectedUser && (
+        <EditUserModal
+          visible={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setSelectedUser(null);
+          }}
+          user={selectedUser}
+        />
+      )}
     </SafeAreaView>
   );
 }
