@@ -13,6 +13,7 @@ import {
 import Filter from "../../components/Filter";
 import { VerticalMealList } from "../../components/Meal";
 import { meals } from "../../utils/data";
+import { StatusBar } from "expo-status-bar";
 
 const styles = StyleSheet.create({
   container: {
@@ -93,6 +94,7 @@ export default function HomeTab() {
       : meals.filter((m) => m.category.toLowerCase() === selectedFilter);
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>
+        <StatusBar style="dark"/>
       {/* Logo */}
       <Image
         tintColor={"#f16e03ff"}

@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, View } from "react-native";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import { MealCard } from "./Meal";
+import SadMealSVG from "./SadMealSVG";
 
 // Simple in-memory favorite store (replace with context or redux for real app)
 export const favoriteStore: {
@@ -26,9 +27,13 @@ export default function FavoriteScreen() {
     <View style={styles.container}>
       <Text style={styles.header}>Your Favorites</Text>
       {favorites.length === 0 ? (
-        <Text style={styles.empty}>
-          No favorite meals yet. Tap the heart icon on any meal to add it here!
-        </Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No favorite meals yet.</Text>
+          <SadMealSVG size={160} />
+          <Text style={styles.emptySubtext}>
+            Tap the heart icon on any meal to add it here!
+          </Text>
+        </View>
       ) : (
         <FlatList
           data={favorites}
@@ -55,10 +60,24 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignSelf: "center",
   },
-  empty: {
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 40,
+  },
+  emptyText: {
+    color: Colors.primary,
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 18,
+  },
+  emptySubtext: {
     color: "#888",
     fontSize: 16,
     textAlign: "center",
-    marginTop: 40,
+    marginTop: 18,
+    marginHorizontal: 10,
   },
 });
