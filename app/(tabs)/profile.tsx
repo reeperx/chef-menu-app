@@ -139,15 +139,24 @@ export default function ProfileTab() {
         {role === "admin" && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Admin Controls</Text>
-            <TouchableOpacity style={styles.adminButton}>
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={() => router.push("/admin/menu")}
+            >
               <Ionicons name="restaurant" size={24} color={Colors.primary} />
               <Text style={styles.adminButtonText}>Manage Menu Items</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.adminButton}>
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={() => router.push("/admin/users")}
+            >
               <Ionicons name="people" size={24} color={Colors.primary} />
               <Text style={styles.adminButtonText}>Manage Users</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.adminButton}>
+            <TouchableOpacity
+              style={styles.adminButton}
+              onPress={() => router.push("/admin/analytics")}
+            >
               <Ionicons name="stats-chart" size={24} color={Colors.primary} />
               <Text style={styles.adminButtonText}>View Analytics</Text>
             </TouchableOpacity>
