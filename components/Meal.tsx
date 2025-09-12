@@ -9,10 +9,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { cartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import type { Meal } from "../utils/data";
-import { cartStore } from "./CartScreen";
 import { favoriteStore } from "./FavoriteScreen";
+import Toast from "./Toast";
 
 const mealCardStyles = StyleSheet.create({
   card: {
@@ -71,15 +72,50 @@ export function MealCard({ meal }: { meal: Meal }) {
   const [inCart, setInCart] = React.useState(() =>
     cartStore.cart.some((m) => m.id === meal.id)
   );
+  React.useEffect(() => {
+    // Patch cartStore.setCart to update badge and inCart
+    const origSetCart = cartStore.setCart;
+    cartStore.setCart = (meals) => {
+      cartStore.cart = meals;
+      setInCart(meals.some((m) => m.id === meal.id));
+      if (
+        typeof origSetCart === "function" &&
+        origSetCart !== cartStore.setCart
+      )
+        origSetCart(meals);
+    };
+    return () => {
+      cartStore.setCart = origSetCart;
+    };
+  }, [meal.id]);
+  // Discount logic: match MealViewScreen
+  const categoryDiscounts: Record<string, number> = {
+    Breakfast: 0.1,
+    Lunch: 0.15,
+    Dinner: 0.2,
+  };
+  const discount = categoryDiscounts[meal.category] || 0;
+  const discountValue = meal.price * discount;
+  const discountedPrice = meal.price - discountValue;
+
   const toggleCart = () => {
     let updated;
     if (inCart) {
       updated = cartStore.cart.filter((m) => m.id !== meal.id);
+      cartStore.setCart(updated);
+      setInCart(false);
     } else {
       updated = [...cartStore.cart, meal];
+      cartStore.setCart(updated);
+      setInCart(true);
+      Toast?.show?.({
+        type: "success",
+        text1: "Order added to cart!",
+        text2: `R ${discountedPrice.toFixed(2)}${
+          discount > 0 ? ` (Discount: -R ${discountValue.toFixed(2)})` : ""
+        }`,
+      });
     }
-    cartStore.setCart(updated);
-    setInCart(!inCart);
   };
   const [imgError, setImgError] = React.useState(false);
   const navigation = useNavigation();
@@ -100,6 +136,22 @@ export function MealCard({ meal }: { meal: Meal }) {
   const [favorite, setFavorite] = React.useState(() =>
     favoriteStore.favorites.some((m) => m.id === meal.id)
   );
+  React.useEffect(() => {
+    // Patch setFavorites to update badge and local state
+    const origSetFavorites = favoriteStore.setFavorites;
+    favoriteStore.setFavorites = (meals) => {
+      favoriteStore.favorites = meals;
+      setFavorite(meals.some((m) => m.id === meal.id));
+      if (
+        typeof origSetFavorites === "function" &&
+        origSetFavorites !== favoriteStore.setFavorites
+      )
+        origSetFavorites(meals);
+    };
+    return () => {
+      favoriteStore.setFavorites = origSetFavorites;
+    };
+  }, [meal.id]);
   const toggleFavorite = () => {
     let updated;
     if (favorite) {
@@ -108,7 +160,6 @@ export function MealCard({ meal }: { meal: Meal }) {
       updated = [...favoriteStore.favorites, meal];
     }
     favoriteStore.setFavorites(updated);
-    setFavorite(!favorite);
   };
   return (
     <View style={mealCardStyles.card}>
@@ -144,7 +195,7 @@ export function MealCard({ meal }: { meal: Meal }) {
             zIndex: 3,
             opacity: 0.6,
           }}
-          onPress={() => (navigation as any).navigate("MealView", { meal })}
+          onPress={() => (navigation as any).navigate("mealview", { meal })}
         >
           <Ionicons name="eye-outline" size={28} color={Colors.primary} />
         </TouchableOpacity>

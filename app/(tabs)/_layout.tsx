@@ -2,8 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { cartStore } from "../../components/CartScreen";
 import { favoriteStore } from "../../components/FavoriteScreen";
+import { cartStore } from "../../store/cartStore";
 import { Colors } from "../../utils/Colors";
 
 function FavoriteTabIcon({
@@ -17,9 +17,24 @@ function FavoriteTabIcon({
 }) {
   const [count, setCount] = React.useState(favoriteStore.favorites.length);
   React.useEffect(() => {
+    // Patch setFavorites to always update badge
+    const origSetFavorites = favoriteStore.setFavorites;
     favoriteStore.setFavorites = (meals) => {
       favoriteStore.favorites = meals;
       setCount(meals.length);
+      if (
+        typeof origSetFavorites === "function" &&
+        origSetFavorites !== favoriteStore.setFavorites
+      )
+        origSetFavorites(meals);
+    };
+    // Listen for manual favorite changes (e.g. from other screens)
+    const interval = setInterval(() => {
+      setCount(favoriteStore.favorites.length);
+    }, 300);
+    return () => {
+      clearInterval(interval);
+      favoriteStore.setFavorites = origSetFavorites;
     };
   }, []);
   return (
@@ -70,13 +85,25 @@ function CartTabIcon({
 }) {
   const [count, setCount] = React.useState(cartStore.cart.length);
   React.useEffect(() => {
+    // Patch setCart to always update badge
+    const origSetCart = cartStore.setCart;
     cartStore.setCart = (meals) => {
       cartStore.cart = meals;
       setCount(meals.length);
+      if (
+        typeof origSetCart === "function" &&
+        origSetCart !== cartStore.setCart
+      ) {
+        origSetCart(meals);
+      }
     };
-    cartStore.clearCart = () => {
-      cartStore.cart = [];
-      setCount(0);
+    // Listen for manual cart changes (e.g. from other screens)
+    const interval = setInterval(() => {
+      setCount(cartStore.cart.length);
+    }, 300);
+    return () => {
+      clearInterval(interval);
+      cartStore.setCart = origSetCart;
     };
   }, []);
   return (

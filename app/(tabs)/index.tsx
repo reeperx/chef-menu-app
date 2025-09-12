@@ -1,7 +1,8 @@
 import Banner from "@/components/Banner";
 import Searchbar from "@/components/Searchbar";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -13,7 +14,7 @@ import {
 import Filter from "../../components/Filter";
 import { VerticalMealList } from "../../components/Meal";
 import { meals } from "../../utils/data";
-import { StatusBar } from "expo-status-bar";
+import { setNavigationBarColor } from "../../utils/setNavigationBar";
 
 const styles = StyleSheet.create({
   container: {
@@ -92,9 +93,15 @@ export default function HomeTab() {
     selectedFilter === "all"
       ? meals
       : meals.filter((m) => m.category.toLowerCase() === selectedFilter);
+
+  useEffect(() => {
+    // Match navigation bar color to StatusBar style
+    setNavigationBarColor("#fff"); // white nav bar for dark icons
+  }, []);
+
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>
-        <StatusBar style="dark"/>
+      <StatusBar style="dark" />
       {/* Logo */}
       <Image
         tintColor={"#f16e03ff"}
@@ -118,7 +125,7 @@ export default function HomeTab() {
       {/* banner */}
       <Banner />
       {/* Filter Chips */}
-      <View style={{ marginTop: 10 }}>
+      <View style={{ marginTop: 5 }}>
         <Filter
           selected={selectedFilter}
           setSelected={setSelectedFilter}

@@ -1,4 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -9,38 +11,58 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { cartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import QuantitySlider from "./QuantitySlider";
 import SadCartSVG from "./SadCartSVG";
 import Sticker from "./Sticker";
 
-export const cartStore: {
-  cart: Meal[];
-  setCart: (meals: Meal[]) => void;
-  clearCart: () => void;
-} = {
-  cart: [],
-  setCart: () => {},
-  clearCart: () => {},
+type RootStackParamList = {
+  Checkout: undefined;
 };
 
 export default function CartScreen() {
   const [cart, setCart] = useState<Meal[]>(cartStore.cart);
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  // Update quantities when cart changes
+  const [quantities, setQuantities] = useState<{ [id: string]: number }>({});
 
   useEffect(() => {
-    cartStore.cart = cart;
-    cartStore.setCart = setCart;
-    cartStore.clearCart = () => setCart([]);
+    // Initialize quantities for new items
+    setQuantities((prev) => {
+      const newQuantities = { ...prev };
+      cart.forEach((meal) => {
+        if (!(meal.id in newQuantities)) {
+          newQuantities[meal.id] = 1;
+        }
+      });
+      return newQuantities;
+    });
   }, [cart]);
 
-  // Track quantity for each meal in cart
-  const [quantities, setQuantities] = useState<{ [id: string]: number }>(() => {
-    const q: { [id: string]: number } = {};
-    cart.forEach((m) => (q[m.id] = 1));
-    return q;
-  });
+  // Set up cart store methods
+  useEffect(() => {
+    const prevSetCart = cartStore.setCart;
+    const prevClearCart = cartStore.clearCart;
+
+    cartStore.cart = cart;
+    cartStore.setCart = (meals) => {
+      cartStore.cart = meals;
+      setCart([...meals]);
+    };
+    cartStore.clearCart = () => {
+      setCart([]);
+      setQuantities({});
+    };
+
+    // Cleanup function
+    return () => {
+      cartStore.setCart = prevSetCart;
+      cartStore.clearCart = prevClearCart;
+    };
+  }, []);
   // Assign a stable sticker type per meal
   const STICKERS = ["Hot", "Spicy", "Mild", "Special"];
   const [stickers] = useState<{ [id: string]: string }>(() => {
@@ -111,19 +133,47 @@ export default function CartScreen() {
                         R {item.price.toFixed(2)}
                       </Text>
                     </View>
-                    {/* Quantity slider right */}
-                    <QuantitySlider
-                      value={quantities[item.id] || 1}
-                      setValue={(v) =>
-                        setQuantities((q) => ({ ...q, [item.id]: v }))
-                      }
-                      min={1}
-                      max={10}
-                    />
+                    <View
+                      style={{
+                        alignItems: "flex-end",
+                        justifyContent: "center",
+                        minWidth: 90,
+                      }}
+                    >
+                      <QuantitySlider
+                        value={quantities[item.id] || 1}
+                        setValue={(v) =>
+                          setQuantities((q) => ({ ...q, [item.id]: v }))
+                        }
+                        min={1}
+                        max={10}
+                      />
+                    </View>
                   </View>
-                  {/* Sticker below, stable */}
-                  <Sticker type={stickers[item.id]} />
+                  {/* Sticker row */}
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 10,
+                    }}
+                  >
+                    <Sticker type={stickers[item.id]} />
+                  </View>
                 </View>
+                {/* Delete button */}
+                <TouchableOpacity
+                  style={styles.deleteBtn}
+                  onPress={() => {
+                    const updated = cart.filter((m) => m.id !== item.id);
+                    const newQuantities = { ...quantities };
+                    delete newQuantities[item.id];
+                    setQuantities(newQuantities);
+                    setCart(updated);
+                  }}
+                >
+                  <Ionicons name="trash" size={16} color="#fff" />
+                </TouchableOpacity>
               </View>
             )}
             contentContainerStyle={{ paddingBottom: 24 }}
@@ -170,6 +220,15 @@ export default function CartScreen() {
               <Text style={styles.checkoutBtnText}>Checkout</Text>
             </TouchableOpacity>
           </View>
+          {/* Delete all orders button */}
+          {cart.length > 0 && (
+            <TouchableOpacity
+              style={styles.deleteAllBtn}
+              onPress={() => setCart([])}
+            >
+              <Text style={styles.deleteAllBtnText}>Delete All Orders</Text>
+            </TouchableOpacity>
+          )}
         </>
       )}
     </View>
@@ -331,5 +390,32 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  deleteBtn: {
+    backgroundColor: "#ff3b30",
+    borderRadius: 8,
+    padding: 8,
+    position: "absolute",
+    top: 90, 
+    right: 8,
+  },
+  deleteBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  deleteAllBtn: {
+    backgroundColor: "#ff3b30",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    alignSelf: "center",
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  deleteAllBtnText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });

@@ -56,7 +56,7 @@ export default function Banner() {
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    marginTop: 20,
+    marginTop: 10,
     overflow: "hidden",
   },
   bannerImage: {
