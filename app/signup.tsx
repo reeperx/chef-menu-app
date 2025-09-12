@@ -53,8 +53,8 @@ export default function SignupScreen() {
       if (success) {
         Toast.show({
           type: "success",
-          text1: "Account created!",
-          text2: "Registration successful.",
+          text1: `Welcome back, ${username}!`,
+          text2: "Your account has been created.",
         });
         router.replace("/home");
       } else {

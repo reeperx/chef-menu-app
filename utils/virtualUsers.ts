@@ -10,7 +10,7 @@ export interface User {
 // Predefined users
 const users: User[] = [
   {
-    username: "admin",
+    username: "Reeper",
     email: "admin@example.com",
     password: "admin123",
     role: "admin",
