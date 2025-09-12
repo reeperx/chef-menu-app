@@ -229,8 +229,8 @@ export function MealCard({ meal }: { meal: Meal }) {
     favoriteStore.setFavorites(updated);
   };
   return (
-    <View style={mealCardStyles.card}>
-      {/* Favorite icon top right */}
+    <View style={[mealCardStyles.card, { marginBottom: 12 }]}>
+      {/* Favorite icon */}
       <TouchableOpacity
         style={{ position: "absolute", top: 10, right: 10, zIndex: 2 }}
         onPress={toggleFavorite}
@@ -242,7 +242,8 @@ export function MealCard({ meal }: { meal: Meal }) {
           color={favorite ? Colors.primary : "#bbb"}
         />
       </TouchableOpacity>
-      {/* Image with always-visible centered eye icon, no opacity */}
+
+      {/* Image with eye icon */}
       <View style={{ position: "relative" }}>
         <Image
           source={imageSource}
@@ -259,7 +260,6 @@ export function MealCard({ meal }: { meal: Meal }) {
             backgroundColor: "#fff",
             borderRadius: 20,
             padding: 8,
-            zIndex: 3,
             opacity: 0.6,
           }}
           onPress={() => (navigation as any).navigate("mealview", { meal })}
@@ -267,32 +267,12 @@ export function MealCard({ meal }: { meal: Meal }) {
           <Ionicons name="eye-outline" size={28} color={Colors.primary} />
         </TouchableOpacity>
       </View>
+
       <View style={mealCardStyles.info}>
         <Text style={mealCardStyles.name}>{meal.name}</Text>
         <Text style={mealCardStyles.desc} numberOfLines={2}>
           {meal.description}
         </Text>
-        {/* Nutrition Info */}
-        {meal.nutritionalInfo && (
-          <View style={mealCardStyles.nutritionInfo}>
-            {meal.nutritionalInfo.calories && (
-              <View style={mealCardStyles.nutritionItem}>
-                <Text style={mealCardStyles.nutritionValue}>
-                  {meal.nutritionalInfo.calories}
-                </Text>
-                <Text style={mealCardStyles.nutritionLabel}>cal</Text>
-              </View>
-            )}
-            {meal.nutritionalInfo.protein && (
-              <View style={mealCardStyles.nutritionItem}>
-                <Text style={mealCardStyles.nutritionValue}>
-                  {meal.nutritionalInfo.protein}g
-                </Text>
-                <Text style={mealCardStyles.nutritionLabel}>protein</Text>
-              </View>
-            )}
-          </View>
-        )}
 
         <View style={mealCardStyles.footer}>
           <View style={mealCardStyles.priceRating}>
@@ -330,11 +310,14 @@ export function VerticalMealList({ meals }: { meals: Meal[] }) {
     <FlatList
       data={meals}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <MealCard meal={item} />}
+      renderItem={({ item }) => (
+        <View style={{ flex: 1, marginHorizontal: 4 }}>
+          <MealCard meal={item} />
+        </View>
+      )}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{ paddingBottom: 24, paddingHorizontal: 4 }}
       numColumns={2}
-      columnWrapperStyle={{ justifyContent: "space-between", gap: 8 }}
     />
   );
 }
