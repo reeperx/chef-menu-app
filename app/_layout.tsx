@@ -5,7 +5,7 @@ export default function RootLayout() {
   return (
     <>
       <Stack
-        initialRouteName="splash"
+        initialRouteName="(tabs)"
         screenOptions={{
           headerShown: false,
         }}

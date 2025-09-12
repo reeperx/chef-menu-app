@@ -21,3 +21,6 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```if you are using expo make sure to also install
    npx expo install react-native-screens react-native-safe-area-context
    ```
+   install also:
+   npm install --save react-native-responsive-dimensions
+   npm i react-native-toast-message

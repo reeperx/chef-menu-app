@@ -195,19 +195,15 @@ export default function LoginScreen() {
             </Text>
           )}
           <Text
-            numberOfLines={2}
             style={{
               fontSize: 15,
               fontWeight: "400",
               color: Colors.default,
               marginTop: 15,
-              letterSpacing: 0.7,
-              lineHeight: 25,
-              width: "85%",
-              opacity: 0.7,
+              textAlign: "right"
             }}
           >
-            By continuing you agree to our Terms of Service and Privacy Policy.
+            Forgot password?
           </Text>
 
           {/* button */}
