@@ -1,7 +1,7 @@
 import Banner from "@/components/Banner";
 import Searchbar from "@/components/Searchbar";
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -10,6 +10,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import Filter, { VerticalMealList } from "../../components/Filter";
+import { meals } from "../../utils/data";
 
 const styles = StyleSheet.create({
   container: {
@@ -83,8 +85,14 @@ export default function HomeTab() {
     job: "Chef",
     avatar: require("../../assets/images/logo.png"),
   };
+  const [selectedFilter, setSelectedFilter] = useState("all");
+  const filteredMeals =
+    selectedFilter === "all"
+      ? meals
+      : meals.filter((m) => m.category.toLowerCase() === selectedFilter);
   return (
     <SafeAreaView style={[styles.container, { flex: 1 }]}>
+      ...
       {/* Logo */}
       <Image
         tintColor={"#f16e03ff"}
@@ -92,7 +100,6 @@ export default function HomeTab() {
         style={styles.logo}
         resizeMode="contain"
       />
-
       {/* User Info Row */}
       <View style={styles.userRow}>
         <Image source={user.avatar} style={styles.avatar} />
@@ -104,13 +111,18 @@ export default function HomeTab() {
           </View>
         </View>
       </View>
-
       {/* searchbar */}
       <Searchbar />
-
       {/* banner */}
       <Banner />
-
+      {/* Filter Chips */}
+      <View style={{ marginTop: 10 }}>
+        <Filter onFilterChange={setSelectedFilter} />
+      </View>
+      {/* Meal Cards Vertical Scroll */}
+      <View style={{ marginTop: 10, flex: 1 }}>
+        <VerticalMealList meals={filteredMeals} />
+      </View>
       {/* Floating Action Button */}
       <TouchableOpacity
         style={styles.fab}
