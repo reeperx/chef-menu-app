@@ -14,13 +14,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAdminStore } from "../../store/adminStore";
 import { Colors } from "../../utils/Colors";
 import Toast from "../Toast";
-import AddMenuItemModal from "./AddMenuItemModal";
 
 export default function ManageMenuScreen() {
   const router = useRouter();
   const { menu: menuItems, deleteMenuItem } = useAdminStore();
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
 
   const filteredItems = menuItems.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -51,21 +49,11 @@ export default function ManageMenuScreen() {
         <Text style={styles.headerTitle}>Manage Menu</Text>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => setIsAddModalVisible(true)}
+          onPress={() => router.push("/admin/add-menu-item")}
         >
           <Ionicons name="add" size={24} color={Colors.primary} />
         </TouchableOpacity>
       </View>
-
-      {/* Add Menu Item Modal */}
-      {isAddModalVisible && (
-        <View style={StyleSheet.absoluteFill}>
-          <AddMenuItemModal
-            visible={isAddModalVisible}
-            onClose={() => setIsAddModalVisible(false)}
-          />
-        </View>
-      )}
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -114,13 +102,12 @@ export default function ManageMenuScreen() {
                     styles.actionButton,
                     { backgroundColor: Colors.primary },
                   ]}
-                  onPress={() => {
-                    Toast.show({
-                      type: "info",
-                      text1: "Coming Soon",
-                      text2: "Edit functionality will be available soon.",
-                    });
-                  }}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/admin/edit-menu-item",
+                      params: { id: item.id },
+                    })
+                  }
                 >
                   <Ionicons name="create" size={20} color="#fff" />
                   <Text style={styles.actionButtonText}>Edit</Text>

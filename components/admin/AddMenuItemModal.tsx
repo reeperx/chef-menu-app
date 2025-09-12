@@ -1,4 +1,10 @@
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, Materialexport default function AddMenuItemModal({
+  visible,
+  onClose,
+  editItem,
+  isScreen
+}: AddMenuItemModalProps) {
+  const router = useRouter();nityIcons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import React, { useState } from "react";
@@ -19,46 +25,61 @@ import { Meal } from "../../utils/data";
 import Toast from "../Toast";
 
 interface AddMenuItemModalProps {
-  visible: boolean;
-  onClose: () => void;
+  visible?: boolean;
+  onClose?: () => void;
+  editItem?: Meal;
+  isScreen?: boolean;
 }
 
 export default function AddMenuItemModal({
   visible,
   onClose,
+  editItem,
 }: AddMenuItemModalProps) {
   // Basic Information
-  const [name, setName] = useState("");
-  const [subtitle, setSubtitle] = useState("");
+  const [name, setName] = useState(editItem?.name || "");
+  const [subtitle, setSubtitle] = useState(editItem?.subtitle || "");
   const [category, setCategory] = useState<"Breakfast" | "Lunch" | "Dinner">(
-    "Breakfast"
+    editItem?.category || "Breakfast"
   );
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(editItem?.description || "");
 
   // Pricing
-  const [price, setPrice] = useState("");
-  const [discountedPrice, setDiscountedPrice] = useState("");
+  const [price, setPrice] = useState(editItem?.price.toString() || "");
+  const [discountedPrice, setDiscountedPrice] = useState(
+    editItem?.discountedPrice?.toString() || ""
+  );
 
   // Image
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(editItem?.image || "");
   const [uploading, setUploading] = useState(false);
 
   // Additional Details
-  const [isSpicy, setIsSpicy] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(true);
-  const [ingredients, setIngredients] = useState("");
+  const [isSpicy, setIsSpicy] = useState(editItem?.isSpicy || false);
+  const [isAvailable, setIsAvailable] = useState(editItem?.isAvailable ?? true);
+  const [ingredients, setIngredients] = useState(
+    editItem?.ingredients?.join(", ") || ""
+  );
 
   // Nutritional Information
-  const [calories, setCalories] = useState("");
-  const [protein, setProtein] = useState("");
-  const [carbs, setCarbs] = useState("");
-  const [fats, setFats] = useState("");
+  const [calories, setCalories] = useState(
+    editItem?.nutritionalInfo?.calories?.toString() || ""
+  );
+  const [protein, setProtein] = useState(
+    editItem?.nutritionalInfo?.protein?.toString() || ""
+  );
+  const [carbs, setCarbs] = useState(
+    editItem?.nutritionalInfo?.carbs?.toString() || ""
+  );
+  const [fats, setFats] = useState(
+    editItem?.nutritionalInfo?.fats?.toString() || ""
+  );
 
   // Form State
   const [errors, setErrors] = useState<string[]>([]);
 
   // Store Actions
-  const { addMenuItem } = useAdminStore();
+  const { addMenuItem, editMenuItem } = useAdminStore();
 
   const pickImage = async () => {
     try {
@@ -177,13 +198,31 @@ export default function AddMenuItemModal({
       isAvailable,
     };
 
-    addMenuItem(newItem);
-    Toast.show({
-      type: "success",
-      text1: "Success",
-      text2: "Menu item added successfully",
-    });
-    onClose();
+    if (editItem) {
+      // Update existing item
+      editMenuItem(editItem.id, {
+        ...newItem,
+        rating: editItem.rating,
+      });
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Menu item updated successfully",
+      });
+    } else {
+      // Add new item
+      addMenuItem(newItem);
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Menu item added successfully",
+      });
+    }
+    if (isScreen) {
+      router.back();
+    } else {
+      onClose?.();
+    }
 
     // Reset form
     setName("");
@@ -212,7 +251,9 @@ export default function AddMenuItemModal({
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <View style={styles.header}>
-            <Text style={styles.title}>Add New Menu Item</Text>
+            <Text style={styles.title}>
+              {editItem ? "Edit Menu Item" : "Add New Menu Item"}
+            </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={24} color={Colors.primary} />
             </TouchableOpacity>
@@ -401,8 +442,8 @@ export default function AddMenuItemModal({
                       {uploading
                         ? "Uploading..."
                         : image
-                        ? "Change Image"
-                        : "Upload Image"}
+                          ? "Change Image"
+                          : "Upload Image"}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -550,7 +591,9 @@ export default function AddMenuItemModal({
               style={styles.submitButton}
               onPress={handleSubmit}
             >
-              <Text style={styles.submitButtonText}>Add Menu Item</Text>
+              <Text style={styles.submitButtonText}>
+                {editItem ? "Update Menu Item" : "Add Menu Item"}
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         </View>
