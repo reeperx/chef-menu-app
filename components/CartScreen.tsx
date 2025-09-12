@@ -29,6 +29,16 @@ export default function CartScreen() {
   // Update quantities when cart changes
   const [quantities, setQuantities] = useState<{ [id: string]: number }>({});
 
+  // Listen for cart updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (JSON.stringify(cartStore.cart) !== JSON.stringify(cart)) {
+        setCart([...cartStore.cart]);
+      }
+    }, 300);
+    return () => clearInterval(interval);
+  }, [cart]);
+
   useEffect(() => {
     // Initialize quantities for new items
     setQuantities((prev) => {
@@ -87,10 +97,17 @@ export default function CartScreen() {
     }
   };
 
-  const total = cart.reduce(
-    (sum, meal) => sum + meal.price * (quantities[meal.id] || 1),
-    0
-  );
+  const categoryDiscounts: Record<string, number> = {
+    Breakfast: 0.1,
+    Lunch: 0.15,
+    Dinner: 0.2,
+  };
+
+  const total = cart.reduce((sum, meal) => {
+    const categoryDiscount = categoryDiscounts[meal.category] || 0;
+    const discountedPrice = meal.price * (1 - categoryDiscount);
+    return sum + discountedPrice * (quantities[meal.id] || 1);
+  }, 0);
   const discountedTotal = discountApplied ? total * (1 - discountValue) : total;
 
   return (
@@ -130,7 +147,26 @@ export default function CartScreen() {
                         {item.description}
                       </Text>
                       <Text style={styles.mealPrice}>
-                        R {item.price.toFixed(2)}
+                        {(() => {
+                          const categoryDiscounts: Record<string, number> = {
+                            Breakfast: 0.1,
+                            Lunch: 0.15,
+                            Dinner: 0.2,
+                          };
+                          const discount = categoryDiscounts[item.category] || 0;
+                          const discountedPrice = item.price * (1 - discount);
+                          return (
+                            <>
+                              R {discountedPrice.toFixed(2)}
+                              {discount > 0 && (
+                                <Text style={styles.discountedOldPrice}>
+                                  {" "}
+                                  (R {item.price.toFixed(2)})
+                                </Text>
+                              )}
+                            </>
+                          );
+                        })()}
                       </Text>
                     </View>
                     <View
@@ -379,6 +415,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textDecorationLine: "line-through",
     marginLeft: 6,
+  },
+  discountedOldPrice: {
+    color: "#888",
+    fontSize: 13,
+    textDecorationLine: "line-through",
   },
   checkoutBtn: {
     backgroundColor: Colors.primary,

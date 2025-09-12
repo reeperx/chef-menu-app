@@ -13,10 +13,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
+import { cartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import { setNavigationBarColor } from "../utils/setNavigationBar";
-import { cartStore } from "./CartScreen";
 import QuantitySlider from "./QuantitySlider";
 import Sticker from "./Sticker";
 import Toast from "./Toast";

@@ -131,11 +131,12 @@ export default function TabsLayout() {
               <FavoriteTabIcon color={color} size={size} focused={focused} />
             );
           }
+          if (route.name === "cart") {
+            return <CartTabIcon color={color} size={size} focused={focused} />;
+          }
           let iconName = "home-outline";
           if (route.name === "index")
             iconName = focused ? "home" : "home-outline";
-          else if (route.name === "cart")
-            iconName = focused ? "cart" : "cart-outline";
           else if (route.name === "profile")
             iconName = focused ? "person" : "person-outline";
           return <Ionicons name={iconName as any} size={size} color={color} />;

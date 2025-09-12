@@ -102,20 +102,24 @@ export function MealCard({ meal }: { meal: Meal }) {
     let updated;
     if (inCart) {
       updated = cartStore.cart.filter((m) => m.id !== meal.id);
-      cartStore.setCart(updated);
-      setInCart(false);
     } else {
-      updated = [...cartStore.cart, meal];
-      cartStore.setCart(updated);
-      setInCart(true);
-      Toast?.show?.({
-        type: "success",
-        text1: "Order added to cart!",
-        text2: `R ${discountedPrice.toFixed(2)}${
-          discount > 0 ? ` (Discount: -R ${discountValue.toFixed(2)})` : ""
-        }`,
-      });
+      // Check if meal already exists in cart
+      const exists = cartStore.cart.some((m) => m.id === meal.id);
+      if (!exists) {
+        updated = [...cartStore.cart, meal];
+        Toast?.show?.({
+          type: "success",
+          text1: "Order added to cart!",
+          text2: `R ${discountedPrice.toFixed(2)}${
+            discount > 0 ? ` (Discount: -R ${discountValue.toFixed(2)})` : ""
+          }`,
+        });
+      } else {
+        updated = cartStore.cart; // No change needed
+      }
     }
+    cartStore.setCart(updated);
+    setInCart(updated.some((m) => m.id === meal.id));
   };
   const [imgError, setImgError] = React.useState(false);
   const navigation = useNavigation();

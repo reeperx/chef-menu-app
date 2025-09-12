@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { cartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
-import { cartStore } from "./CartScreen";
 import HappySVG from "./HappySVG";
 
 export default function CheckoutScreen() {
