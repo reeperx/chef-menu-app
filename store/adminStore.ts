@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Meal } from "../utils/data";
+import { Meal, meals } from "../utils/data";
 import { User, addUser as virtualAddUser } from "../utils/virtualUsers";
 
 interface AdminStore {
@@ -29,7 +29,7 @@ export const useAdminStore = create<AdminStore>(
     get: () => AdminStore
   ) => ({
     // Menu management
-    menu: [],
+    menu: meals, // Initialize with default meals
     addMenuItem: (meal: Meal) => {
       set((state: AdminStore) => ({
         menu: [...state.menu, meal],
@@ -49,7 +49,20 @@ export const useAdminStore = create<AdminStore>(
     },
 
     // User management
-    users: [],
+    users: [
+      {
+        username: "Reeper",
+        email: "admin@example.com",
+        password: "admin123",
+        role: "admin",
+      },
+      {
+        username: "user",
+        email: "user@example.com",
+        password: "user1234",
+        role: "user",
+      },
+    ],
     addUser: (user: User) => {
       const success = virtualAddUser(user);
       if (success) {

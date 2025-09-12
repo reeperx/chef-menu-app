@@ -1,5 +1,4 @@
 import { Colors } from "@/utils/Colors";
-import { findUser } from "@/utils/virtualUsers";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -14,6 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
+import { useAuthStore } from "../store/authStore";
 
 export default function LoginScreen() {
   const [isVisible, setisVisible] = useState(true);
@@ -40,13 +40,15 @@ export default function LoginScreen() {
     return valid;
   };
 
+  const { login } = useAuthStore();
+
   const handleLogin = () => {
     if (validate()) {
-      const user = findUser(username, password);
-      if (user) {
+      const success = login(username, password);
+      if (success) {
         Toast.show({
           type: "success",
-          text1: `Welcome, ${user.role === "admin" ? "Admin" : "User"}!`,
+          text1: "Welcome back!",
           text2: "Login successful.",
         });
         router.replace("/(tabs)");
@@ -200,7 +202,7 @@ export default function LoginScreen() {
               fontWeight: "400",
               color: Colors.default,
               marginTop: 15,
-              textAlign: "right"
+              textAlign: "right",
             }}
           >
             Forgot password?

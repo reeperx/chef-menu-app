@@ -1,18 +1,13 @@
 import Banner from "@/components/Banner";
 import Searchbar from "@/components/Searchbar";
-import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import {
-  Image,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import Filter from "../../components/Filter";
 import { VerticalMealList } from "../../components/Meal";
+import FloatingActionButton from "../../components/common/FloatingActionButton";
+import { useAuthStore } from "../../store/authStore";
 import { meals } from "../../utils/data";
 import { setNavigationBarColor } from "../../utils/setNavigationBar";
 
@@ -63,31 +58,11 @@ const styles = StyleSheet.create({
     color: "#888",
     fontWeight: "500",
   },
-  fab: {
-    position: "absolute",
-    bottom: 40,
-    right: 30,
-    backgroundColor: "#f16e03ff",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
 });
 
 export default function HomeTab() {
-  const user = {
-    name: "Reeper",
-    role: "Admin",
-    job: "Chef",
-    avatar: require("../../assets/images/logo.png"),
-  };
+  const router = useRouter();
+  const { user } = useAuthStore();
   const [selectedFilter, setSelectedFilter] = useState("all");
   const filteredMeals =
     selectedFilter === "all"
@@ -111,12 +86,14 @@ export default function HomeTab() {
       />
       {/* User Info Row */}
       <View style={styles.userRow}>
-        <Image source={user.avatar} style={styles.avatar} />
+        <Image
+          source={require("../../assets/images/logo.png")}
+          style={styles.avatar}
+        />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>{user.name}</Text>
+          <Text style={styles.userName}>{user?.username || "Guest"}</Text>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <Text style={styles.userRole}>{user.role}</Text>
-            <Text style={styles.userJob}>{user.job}</Text>
+            <Text style={styles.userRole}>{user?.role || "User"}</Text>
           </View>
         </View>
       </View>
@@ -137,14 +114,7 @@ export default function HomeTab() {
         <VerticalMealList meals={filteredMeals} />
       </View>
       {/* Floating Action Button */}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => {
-          // Add your add-item logic here
-        }}
-      >
-        <Ionicons name="add" size={32} color="#fff" />
-      </TouchableOpacity>
+      <FloatingActionButton onPress={() => router.push("/admin/menu")} />
     </SafeAreaView>
   );
 }
