@@ -23,7 +23,7 @@ export default function AdminProfileScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => router.replace("/(tabs)")}
         >
           <Ionicons name="arrow-back" size={24} color={Colors.primary} />
         </TouchableOpacity>

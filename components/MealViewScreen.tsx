@@ -20,14 +20,14 @@ import { setNavigationBarColor } from "../utils/setNavigationBar";
 import QuantitySlider from "./QuantitySlider";
 import Sticker from "./Sticker";
 import Toast from "./Toast";
-// To style the Android navigation bar, you can use expo-system-ui
+
 
 const { width, height } = Dimensions.get("window");
 
 export default function MealViewScreen() {
   const route = useRoute();
   const router = useRouter();
-  // Use 'any' for params to avoid TS error
+  
   const params = (route as any).params || {};
   const meal: Meal = params.meal;
   const [quantity, setQuantity] = useState(1);
@@ -174,16 +174,77 @@ export default function MealViewScreen() {
           </View>
         </View>
         <Text style={styles.subtitle}>{subtitle}</Text>
+
+        {/* Nutritional Information */}
+        {meal.nutritionalInfo && (
+          <View style={styles.nutritionContainer}>
+            <Text style={styles.sectionTitle}>Nutritional Information</Text>
+            <View style={styles.nutritionGrid}>
+              {meal.nutritionalInfo.calories && (
+                <View style={styles.nutritionItem}>
+                  <Text style={styles.nutritionValue}>
+                    {meal.nutritionalInfo.calories}
+                  </Text>
+                  <Text style={styles.nutritionLabel}>Calories</Text>
+                </View>
+              )}
+              {meal.nutritionalInfo.protein && (
+                <View style={styles.nutritionItem}>
+                  <Text style={styles.nutritionValue}>
+                    {meal.nutritionalInfo.protein}g
+                  </Text>
+                  <Text style={styles.nutritionLabel}>Protein</Text>
+                </View>
+              )}
+              {meal.nutritionalInfo.carbs && (
+                <View style={styles.nutritionItem}>
+                  <Text style={styles.nutritionValue}>
+                    {meal.nutritionalInfo.carbs}g
+                  </Text>
+                  <Text style={styles.nutritionLabel}>Carbs</Text>
+                </View>
+              )}
+              {meal.nutritionalInfo.fats && (
+                <View style={styles.nutritionItem}>
+                  <Text style={styles.nutritionValue}>
+                    {meal.nutritionalInfo.fats}g
+                  </Text>
+                  <Text style={styles.nutritionLabel}>Fats</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
+
+        {/* Ingredients */}
+        {meal.ingredients && meal.ingredients.length > 0 && (
+          <View style={styles.ingredientsContainer}>
+            <Text style={styles.sectionTitle}>Ingredients</Text>
+            <View style={styles.ingredientsGrid}>
+              {meal.ingredients.map((ingredient, index) => (
+                <View key={index} style={styles.ingredientItem}>
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={16}
+                    color={Colors.primary}
+                  />
+                  <Text style={styles.ingredientText}>{ingredient}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <Text style={styles.descriptionTitle}>Description</Text>
         <Text
           style={styles.descriptionText}
-          numberOfLines={7}
+          numberOfLines={3}
           ellipsizeMode="tail"
         >
           {longDescription}
         </Text>
-      </View>
       {/* Cart button and quantity at the bottom */}
-      <View style={styles.bottomBar}>
+    <View style={styles.bottomBar}>
         <QuantitySlider
           value={quantity}
           setValue={setQuantity}
@@ -222,6 +283,7 @@ export default function MealViewScreen() {
           )}
         </View>
       </View>
+      </View>
     </View>
   );
 }
@@ -231,9 +293,84 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  nutritionContainer: {
+    marginTop: 16,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 16,
+    padding: 16,
+  },
+  nutritionGrid: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  nutritionItem: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    alignItems: "center",
+    flex: 1,
+    marginHorizontal: 4,
+    maxWidth: "30%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  nutritionValue: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: Colors.primary,
+    marginBottom: 4,
+  },
+  nutritionLabel: {
+    fontSize: 13,
+    color: "#666",
+    textAlign: "center",
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: Colors.primary,
+    marginBottom: 8,
+  },
+  ingredientsContainer: {
+    marginTop: 16,
+    backgroundColor: "#f8f8f8",
+    borderRadius: 16,
+    padding: 16,
+  },
+  ingredientsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  ingredientItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+  },
+  ingredientText: {
+    fontSize: 14,
+    color: "#444",
+  },
+  descriptionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: Colors.primary,
+    marginTop: 16,
+    marginBottom: 8,
+  },
   image: {
     width: width,
-    height: height * 0.5,
+    height: height * 0.25, // Reduced to 1/4 of screen height
     justifyContent: "flex-end",
   },
   topBar: {
@@ -303,7 +440,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+    paddingBottom: 100, // Added more padding at bottom for content
     elevation: 8,
     shadowColor: "#000",
     shadowOpacity: 0.08,
@@ -361,21 +500,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 24,
     paddingVertical: 18,
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    position: "absolute",
     left: 0,
     right: 0,
-    bottom: 80, // moved further up
+    bottom: 0,
     zIndex: 30,
     gap: 16,
     marginTop: 20,
-    borderRadius: 18,
-    shadowColor: Colors.primary,
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
   },
   discountPill: {
     // old pill style, now used for text only

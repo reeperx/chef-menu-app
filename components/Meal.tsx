@@ -17,24 +17,21 @@ import Toast from "./Toast";
 
 const mealCardStyles = StyleSheet.create({
   card: {
-    flex: 0.48,
+    flex: 1,
     backgroundColor: "#fff",
     borderRadius: 16,
-    marginBottom: 18,
-    marginHorizontal: 0,
-    borderWidth: 1.5,
-    borderColor: Colors.primary,
-    shadowColor: "#000",
+    borderWidth: 1,
+    borderColor: "#eee",
+    shadowColor: Colors.primary,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 2,
     overflow: "hidden",
-    alignSelf: "stretch",
   },
   image: {
     width: "100%",
-    height: 120,
+    height: 140,
   },
   info: {
     padding: 12,
@@ -48,23 +45,64 @@ const mealCardStyles = StyleSheet.create({
   desc: {
     fontSize: 13,
     color: "#666",
-    marginBottom: 6,
+    marginBottom: 8,
+    lineHeight: 18,
   },
-  price: {
+  nutritionInfo: {
+    flexDirection: "row",
+    marginBottom: 12,
+    gap: 8,
+  },
+  nutritionItem: {
+    backgroundColor: "#f8f8f8",
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    alignItems: "center",
+  },
+  nutritionValue: {
+    fontSize: 14,
     fontWeight: "600",
     color: Colors.primary,
-    marginRight: 8,
   },
-  rating: {
-    color: "#888",
-    fontSize: 13,
-    marginRight: 8,
+  nutritionLabel: {
+    fontSize: 11,
+    color: "#666",
   },
-  row: {
+  footer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 4,
+  },
+  priceRating: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.primary,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f8f8f8",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  rating: {
+    color: Colors.primary,
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  cartButton: {
+    borderRadius: 20,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: Colors.primary,
   },
 });
 
@@ -72,6 +110,7 @@ export function MealCard({ meal }: { meal: Meal }) {
   const [inCart, setInCart] = React.useState(() =>
     cartStore.cart.some((m) => m.id === meal.id)
   );
+  // State removed as it's no longer needed
 
   // Listen for cart clear
   React.useEffect(() => {
@@ -233,20 +272,45 @@ export function MealCard({ meal }: { meal: Meal }) {
         <Text style={mealCardStyles.desc} numberOfLines={2}>
           {meal.description}
         </Text>
-        <View style={[mealCardStyles.row, { gap: 0 }]}>
-          <Text style={mealCardStyles.price}>R {meal.price.toFixed(2)}</Text>
-          <Text style={mealCardStyles.rating}>⭐ {meal.rating.toFixed(1)}</Text>
+        {/* Nutrition Info */}
+        {meal.nutritionalInfo && (
+          <View style={mealCardStyles.nutritionInfo}>
+            {meal.nutritionalInfo.calories && (
+              <View style={mealCardStyles.nutritionItem}>
+                <Text style={mealCardStyles.nutritionValue}>
+                  {meal.nutritionalInfo.calories}
+                </Text>
+                <Text style={mealCardStyles.nutritionLabel}>cal</Text>
+              </View>
+            )}
+            {meal.nutritionalInfo.protein && (
+              <View style={mealCardStyles.nutritionItem}>
+                <Text style={mealCardStyles.nutritionValue}>
+                  {meal.nutritionalInfo.protein}g
+                </Text>
+                <Text style={mealCardStyles.nutritionLabel}>protein</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        <View style={mealCardStyles.footer}>
+          <View style={mealCardStyles.priceRating}>
+            <Text style={mealCardStyles.price}>R {meal.price.toFixed(2)}</Text>
+            <View style={mealCardStyles.ratingContainer}>
+              <Ionicons name="star" size={14} color={Colors.primary} />
+              <Text style={mealCardStyles.rating}>
+                {meal.rating.toFixed(1)}
+              </Text>
+            </View>
+          </View>
+
           {/* Cart icon */}
           <TouchableOpacity
-            style={{
-              marginLeft: 6,
-              marginRight: 4,
-              backgroundColor: inCart ? Colors.primary : "#fff",
-              borderRadius: 20,
-              padding: 6,
-              borderWidth: 1,
-              borderColor: Colors.primary,
-            }}
+            style={[
+              mealCardStyles.cartButton,
+              { backgroundColor: inCart ? Colors.primary : "#fff" },
+            ]}
             onPress={toggleCart}
           >
             <Ionicons

@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
   FlatList,
@@ -38,11 +39,12 @@ export default function ManageMenuScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => router.push("/admin/profile")}
         >
           <Ionicons name="arrow-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
@@ -92,6 +94,38 @@ export default function ManageMenuScreen() {
               <Text style={styles.itemDescription} numberOfLines={2}>
                 {item.description}
               </Text>
+              {item.nutritionalInfo && (
+                <View style={styles.nutritionInfo}>
+                  {item.nutritionalInfo.calories && (
+                    <View style={styles.nutrientBadge}>
+                      <Text style={styles.nutrientText}>
+                        {item.nutritionalInfo.calories} cal
+                      </Text>
+                    </View>
+                  )}
+                  {item.nutritionalInfo.protein && (
+                    <View style={styles.nutrientBadge}>
+                      <Text style={styles.nutrientText}>
+                        {item.nutritionalInfo.protein}g protein
+                      </Text>
+                    </View>
+                  )}
+                  {item.nutritionalInfo.carbs && (
+                    <View style={styles.nutrientBadge}>
+                      <Text style={styles.nutrientText}>
+                        {item.nutritionalInfo.carbs}g carbs
+                      </Text>
+                    </View>
+                  )}
+                  {item.nutritionalInfo.fats && (
+                    <View style={styles.nutrientBadge}>
+                      <Text style={styles.nutrientText}>
+                        {item.nutritionalInfo.fats}g fats
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
               <View style={styles.ratingContainer}>
                 <Ionicons name="star" size={16} color={Colors.primary} />
                 <Text style={styles.ratingText}>{item.rating.toFixed(1)}</Text>
@@ -234,7 +268,8 @@ const styles = StyleSheet.create({
   },
   itemActions: {
     flexDirection: "row",
-    gap: 8,
+    justifyContent: "space-between",
+    marginTop: 8,
   },
   actionButton: {
     flexDirection: "row",
@@ -247,6 +282,23 @@ const styles = StyleSheet.create({
   actionButtonText: {
     color: "#fff",
     fontSize: 14,
+    fontWeight: "500",
+  },
+  nutritionInfo: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 8,
+  },
+  nutrientBadge: {
+    backgroundColor: Colors.primary + "15",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  nutrientText: {
+    color: Colors.primary,
+    fontSize: 12,
     fontWeight: "500",
   },
 });

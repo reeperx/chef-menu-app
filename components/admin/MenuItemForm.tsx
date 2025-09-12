@@ -207,7 +207,7 @@ export default function MenuItemForm({ editItem, isModal }: MenuItemFormProps) {
       });
     }
 
-    router.back();
+    router.push("/admin/menu");
   };
 
   return (
