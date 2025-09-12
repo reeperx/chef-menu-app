@@ -76,24 +76,28 @@ export default function Searchbar() {
   };
 
   // Navigate to MealView if meal found
-  const goToMealView = (mealName: string) => {
-    const meal = meals.find(
-      (m) => m.name.toLowerCase() === mealName.toLowerCase()
-    );
-    if (meal) {
-      (navigation as any).navigate("MealView", { meal });
-    }
-  };
 
-  const handleSelect = (text: string) => {
-    setQuery(text);
+  const handleSelect = (mealOrName: any) => {
+    let meal = mealOrName;
+    let name = typeof mealOrName === "string" ? mealOrName : mealOrName.name;
+
+    if (typeof mealOrName === "string") {
+      meal = meals.find(
+        (m) => m.name.toLowerCase() === mealOrName.toLowerCase()
+      );
+    }
+
+    setQuery(name);
     setShowSuggestions(false);
     Keyboard.dismiss();
     setHistory((prev) => {
-      const filtered = prev.filter((item) => item !== text);
-      return [...filtered, text].slice(-5);
+      const filtered = prev.filter((item) => item !== name);
+      return [...filtered, name].slice(-5);
     });
-    goToMealView(text);
+
+    if (meal) {
+      (navigation as any).navigate("MealView", { meal });
+    }
   };
 
   // Use @jamsch/expo-speech-recognition for real voice input
@@ -126,7 +130,13 @@ export default function Searchbar() {
           value={query}
           onChangeText={handleSearch}
           onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          onBlur={() => {
+            setTimeout(() => {
+              if (!inputRef.current?.isFocused()) {
+                setShowSuggestions(false);
+              }
+            }, 150);
+          }}
           returnKeyType="search"
           onSubmitEditing={handleSearchIcon}
         />
@@ -144,7 +154,7 @@ export default function Searchbar() {
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     style={styles.suggestionItem}
-                    onPress={() => handleSelect(item.name)}
+                    onPress={() => handleSelect(item)}
                   >
                     <Feather name="search" size={16} color="#888" />
                     <Text style={styles.suggestionText}>{item.name}</Text>

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Colors } from "../utils/Colors";
 import type { Meal } from "../utils/data";
+import { favoriteStore } from "./FavoriteScreen";
 
 const mealCardStyles = StyleSheet.create({
   card: {
@@ -67,7 +68,6 @@ const mealCardStyles = StyleSheet.create({
 
 export function MealCard({ meal }: { meal: Meal }) {
   const [inCart, setInCart] = React.useState(false);
-  const [favorite, setFavorite] = React.useState(false);
   const [imgError, setImgError] = React.useState(false);
   const navigation = useNavigation();
   const fallbackImage = require("../assets/images/partial-react-logo.png");
@@ -83,12 +83,26 @@ export function MealCard({ meal }: { meal: Meal }) {
   } else {
     imageSource = fallbackImage;
   }
+  // Favorite logic: check if meal is in global favorites
+  const [favorite, setFavorite] = React.useState(() =>
+    favoriteStore.favorites.some((m) => m.id === meal.id)
+  );
+  const toggleFavorite = () => {
+    let updated;
+    if (favorite) {
+      updated = favoriteStore.favorites.filter((m) => m.id !== meal.id);
+    } else {
+      updated = [...favoriteStore.favorites, meal];
+    }
+    favoriteStore.setFavorites(updated);
+    setFavorite(!favorite);
+  };
   return (
     <View style={mealCardStyles.card}>
       {/* Favorite icon top right */}
       <TouchableOpacity
         style={{ position: "absolute", top: 10, right: 10, zIndex: 2 }}
-        onPress={() => setFavorite((prev) => !prev)}
+        onPress={toggleFavorite}
         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
         <Ionicons
@@ -115,7 +129,7 @@ export function MealCard({ meal }: { meal: Meal }) {
             borderRadius: 20,
             padding: 8,
             zIndex: 3,
-            opacity: 0.6
+            opacity: 0.6,
           }}
           onPress={() => (navigation as any).navigate("MealView", { meal })}
         >
