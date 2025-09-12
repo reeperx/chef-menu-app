@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 export default function SplashScreen() {
 
   const router = useRouter();
-  
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       router.replace("/signup");
@@ -45,7 +45,6 @@ export default function SplashScreen() {
           }}
           source={require("../../assets/images/logo.png")}
           resizeMode="contain"
-       
         />
       </View>
     </View>

@@ -1,12 +1,21 @@
-import { View, Text, ScrollView, Image, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Colors } from '@/utils/Colors';
-import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Colors } from "@/utils/Colors";
+import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function LoginScreen() {
   const [isVisible, setisVisible] = useState(true);
+  const router = useRouter();
 
   return (
     <SafeAreaView
@@ -61,7 +70,7 @@ export default function LoginScreen() {
               marginTop: 10,
             }}
           >
-            Enter your credentials to continue
+            Welcome back 😃
           </Text>
 
           {/* username */}
@@ -140,7 +149,7 @@ export default function LoginScreen() {
               opacity: 0.7,
             }}
           >
-            Welcome back for fantistic meals.
+            By continuing you agree to our Terms of Service and Privacy Policy.
           </Text>
 
           {/* button */}
@@ -173,7 +182,7 @@ export default function LoginScreen() {
               justifyContent: "center",
               alignItems: "center",
               marginTop: 15,
-              gap: 6
+              gap: 6,
             }}
           >
             <Text
@@ -183,19 +192,25 @@ export default function LoginScreen() {
             >
               Don&apos;t have an account?
             </Text>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "800",
-                color: Colors.primary,
-                letterSpacing: 1
+            <TouchableOpacity
+              onPress={() => {
+                router.navigate("/signup");
               }}
             >
-              Register
-            </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "800",
+                  color: Colors.primary,
+                  letterSpacing: 1,
+                }}
+              >
+                Register
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
+  );
 }

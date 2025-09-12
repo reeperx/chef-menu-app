@@ -17,10 +17,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```
 
 3. Install the dependencies
-   ``` 
-   npm install @react-navigation/native @react-navigation/native-stack
-   ```
-   if you are using expo make sure to also install
-   ```
+
+   ```if you are using expo make sure to also install
    npx expo install react-native-screens react-native-safe-area-context
    ```

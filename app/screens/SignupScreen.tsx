@@ -11,9 +11,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "@/utils/Colors";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function SignupScreen() {
   const [isVisible, setisVisible] = useState(true);
+  const router = useRouter();
 
   return (
     <SafeAreaView
@@ -212,6 +214,11 @@ export default function SignupScreen() {
             >
               Already have an account?
             </Text>
+            <TouchableOpacity 
+            onPress={() => {
+              router.navigate("/login")
+            }}
+            >
             <Text
               style={{
                 fontSize: 16,
@@ -222,6 +229,7 @@ export default function SignupScreen() {
             >
               Login
             </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
