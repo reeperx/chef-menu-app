@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,13 +11,20 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAdminStore } from "../../store/adminStore";
+import { useAuthStore } from "../../store/authStore";
 import { Colors } from "../../utils/Colors";
 
 export default function AdminProfileScreen() {
   const router = useRouter();
   const { users } = useAdminStore();
+  const { logout } = useAuthStore();
 
   const admin = users.find((user) => user.role === "admin");
+
+  const handleLogout = () => {
+    logout();
+    router.replace("/login");
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,10 +69,17 @@ export default function AdminProfileScreen() {
                     <View style={styles.infoIconContainer}>
                       <Ionicons name="mail" size={20} color={Colors.primary} />
                     </View>
-                    <View>
+                    <View style={styles.emailContainer}>
                       <Text style={styles.infoLabel}>Email</Text>
                       <Text style={styles.infoValue}>{admin.email}</Text>
                     </View>
+                    <TouchableOpacity
+                      style={styles.logoutButton}
+                      onPress={handleLogout}
+                    >
+                      <Ionicons name="log-out" size={20} color="#fff" />
+                      <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
               </View>
@@ -158,6 +173,7 @@ export default function AdminProfileScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
+
             </View>
           </>
         ) : (
@@ -266,6 +282,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 12,
   },
+  emailContainer: {
+    flex: 1,
+  },
   infoIconContainer: {
     width: 40,
     height: 40,
@@ -334,5 +353,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#666",
     marginTop: 12,
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    backgroundColor: "#ff3b30",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  logoutText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#fff",
   },
 });

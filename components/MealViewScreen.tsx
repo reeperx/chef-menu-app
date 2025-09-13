@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { cartStore } from "../store/cartStore";
+import { useCartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import { setNavigationBarColor } from "../utils/setNavigationBar";
@@ -27,29 +27,15 @@ const { width, height } = Dimensions.get("window");
 export default function MealViewScreen() {
   const route = useRoute();
   const router = useRouter();
+  const { cart, addToCart } = useCartStore();
   
   const params = (route as any).params || {};
   const meal: Meal = params.meal;
   const [quantity, setQuantity] = useState(1);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(cartStore.cart.length);
 
   useEffect(() => {
     setNavigationBarColor("#222");
-    // Sync cart count with global store
-    cartStore.setCart = (meals) => {
-      cartStore.cart = meals;
-      setCartCount(meals.length);
-    };
-    cartStore.clearCart = () => {
-      cartStore.cart = [];
-      setCartCount(0);
-    };
-    // Listen for cart changes from other screens
-    const interval = setInterval(() => {
-      setCartCount(cartStore.cart.length);
-    }, 500);
-    return () => clearInterval(interval);
   }, []);
 
   // Dummy data for views (since not in Meal type)
@@ -92,12 +78,9 @@ export default function MealViewScreen() {
   };
   // Add to cart and navigate
   const handleAddToCart = () => {
-    let updated = [...cartStore.cart];
     // Only add if not already in cart
-    if (!updated.some((m) => m.id === meal.id)) {
-      updated.push(meal);
-      cartStore.setCart([...updated]); // force re-render everywhere
-      setCartCount(updated.length);
+    if (!cart.some((m) => m.id === meal.id)) {
+      addToCart(meal);
       Toast.show({
         type: "success",
         text1: "Order added to cart!",
@@ -267,9 +250,9 @@ export default function MealViewScreen() {
               style={{ marginRight: 10 }}
             />
             {/* Cart notification bubble */}
-            {cartCount > 0 && (
+            {cart.length > 0 && (
               <View style={styles.cartBadge}>
-                <Text style={styles.cartBadgeText}>{cartCount}</Text>
+                <Text style={styles.cartBadgeText}>{cart.length}</Text>
               </View>
             )}
             <Text style={styles.priceText}>R {discountedPrice.toFixed(2)}</Text>

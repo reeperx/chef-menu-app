@@ -1,5 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useRef, useState } from "react";
 import {
   FlatList,
@@ -10,7 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { meals } from "../utils/data";
+import { meals, Meal } from "../utils/data";
+
+type RootStackParamList = {
+  MealView: { meal: Meal };
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -58,7 +63,7 @@ export default function Searchbar() {
   const [history, setHistory] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<TextInput>(null);
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   // Optimistic search: filter meals as user types
   const suggestions =
@@ -86,16 +91,30 @@ export default function Searchbar() {
       );
     }
 
+    // Fill the input field with the selected item name
     setQuery(name);
     setShowSuggestions(false);
-    Keyboard.dismiss();
+    
+    // Add to search history
     setHistory((prev) => {
       const filtered = prev.filter((item) => item !== name);
       return [...filtered, name].slice(-5);
     });
 
-    if (meal) {
-      (navigation as any).navigate("MealView", { meal });
+    // Don't navigate immediately, just fill the input
+    // User can press search icon or enter to navigate
+  };
+
+  // Separate function for navigation when user confirms search
+  const handleConfirmSearch = () => {
+    if (query.trim()) {
+      const meal = meals.find(
+        (m) => m.name.toLowerCase() === query.trim().toLowerCase()
+      );
+      if (meal) {
+        navigation.navigate("MealView", { meal });
+        Keyboard.dismiss();
+      }
     }
   };
 
@@ -112,7 +131,7 @@ export default function Searchbar() {
   const handleSearchIcon = () => {
     inputRef.current?.focus();
     if (query.trim()) {
-      handleSelect(query.trim());
+      handleConfirmSearch();
     }
   };
 
@@ -137,7 +156,7 @@ export default function Searchbar() {
             }, 150);
           }}
           returnKeyType="search"
-          onSubmitEditing={handleSearchIcon}
+          onSubmitEditing={handleConfirmSearch}
         />
         <TouchableOpacity onPress={handleMic}>
           <Feather name="mic" size={20} color={"black"} />

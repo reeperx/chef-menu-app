@@ -1,4 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React, { useState } from "react";
 import {
   StyleSheet,
@@ -7,23 +8,28 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { cartStore } from "../store/cartStore";
+import { useCartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import HappySVG from "./HappySVG";
+
+type RootStackParamList = {
+  index: undefined;
+};
 
 export default function CheckoutScreen() {
   const [card, setCard] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [success, setSuccess] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const { clearCart } = useCartStore();
 
   const handleCheckout = () => {
     setSuccess(true);
-    cartStore.clearCart();
+    clearCart();
     setTimeout(() => {
       setSuccess(false);
-      (navigation as any).navigate("index");
+      navigation.navigate("index");
     }, 2000);
   };
 

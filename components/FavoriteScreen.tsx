@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -8,29 +9,62 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { create } from "zustand";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import { MealCard } from "./Meal";
 import SadMealSVG from "./SadMealSVG";
 
-// Simple in-memory favorite store (replace with context or redux for real app)
-export const favoriteStore: {
+interface FavoriteState {
   favorites: Meal[];
   setFavorites: (meals: Meal[]) => void;
-} = {
+  addToFavorites: (meal: Meal) => void;
+  removeFromFavorites: (mealId: string) => void;
+  isFavorite: (mealId: string) => boolean;
+  getFavoriteCount: () => number;
+}
+
+export const useFavoriteStore = create<FavoriteState>((set, get) => ({
   favorites: [],
-  setFavorites: () => {},
+  
+  setFavorites: (meals: Meal[]) => {
+    set({ favorites: meals });
+  },
+  
+  addToFavorites: (meal: Meal) => {
+    const { favorites } = get();
+    const exists = favorites.some((m) => m.id === meal.id);
+    if (!exists) {
+      set({ favorites: [...favorites, meal] });
+    }
+  },
+  
+  removeFromFavorites: (mealId: string) => {
+    const { favorites } = get();
+    set({ favorites: favorites.filter((m) => m.id !== mealId) });
+  },
+  
+  isFavorite: (mealId: string) => {
+    return get().favorites.some((m) => m.id === mealId);
+  },
+  
+  getFavoriteCount: () => {
+    return get().favorites.length;
+  },
+}));
+
+// Legacy compatibility - keep for components that still use the old pattern
+export const favoriteStore = {
+  get favorites() {
+    return useFavoriteStore.getState().favorites;
+  },
+  setFavorites: (meals: Meal[]) => useFavoriteStore.getState().setFavorites(meals),
 };
 
 export default function FavoriteScreen() {
-  const [favorites, setFavorites] = useState<Meal[]>(favoriteStore.favorites);
+  const { favorites, setFavorites } = useFavoriteStore();
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Keep store in sync for other components
-  useEffect(() => {
-    favoriteStore.favorites = favorites;
-    favoriteStore.setFavorites = setFavorites;
-  }, [favorites]);
+  const router = useRouter();
 
   // Filter favorites based on search query
   const filteredFavorites = favorites.filter(
@@ -43,9 +77,12 @@ export default function FavoriteScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.header}>Your Favorites</Text>
+        <Ionicons name="heart" size={28} color={Colors.primary} />
+        <Text style={styles.header}>My Favorites</Text>
         {favorites.length > 0 && (
-          <Text style={styles.count}>{favorites.length} saved</Text>
+          <View style={styles.favoriteBadge}>
+            <Text style={styles.favoriteBadgeText}>{favorites.length}</Text>
+          </View>
         )}
       </View>
 
@@ -74,7 +111,10 @@ export default function FavoriteScreen() {
           <Text style={styles.emptySubtext}>
             Tap the heart icon on any meal to save it here
           </Text>
-          <TouchableOpacity style={styles.browseButton}>
+          <TouchableOpacity
+            style={styles.browseButton}
+            onPress={() => router.push("/(tabs)")}
+          >
             <Text style={styles.browseButtonText}>Browse Menu</Text>
           </TouchableOpacity>
         </View>
@@ -115,27 +155,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 20,
+    paddingTop: 40,
   },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
     paddingHorizontal: 20,
     marginBottom: 16,
+    gap: 8,
   },
   header: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     color: Colors.primary,
   },
-  count: {
-    fontSize: 15,
-    color: "#666",
-    backgroundColor: "#f0f0f0",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+  favoriteBadge: {
+    backgroundColor: Colors.primary,
     borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+  },
+  favoriteBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   searchContainer: {
     flexDirection: "row",

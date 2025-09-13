@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { cartStore } from "../store/cartStore";
+import { useCartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import { Meal } from "../utils/data";
 import QuantitySlider from "./QuantitySlider";
@@ -23,21 +23,11 @@ type RootStackParamList = {
 };
 
 export default function CartScreen() {
-  const [cart, setCart] = useState<Meal[]>(cartStore.cart);
+  const { cart, removeFromCart, clearCart } = useCartStore();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   // Update quantities when cart changes
   const [quantities, setQuantities] = useState<{ [id: string]: number }>({});
-
-  // Listen for cart updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (JSON.stringify(cartStore.cart) !== JSON.stringify(cart)) {
-        setCart([...cartStore.cart]);
-      }
-    }, 300);
-    return () => clearInterval(interval);
-  }, [cart]);
 
   useEffect(() => {
     // Initialize quantities for new items
@@ -50,28 +40,6 @@ export default function CartScreen() {
       });
       return newQuantities;
     });
-  }, [cart]);
-
-  // Set up cart store methods
-  useEffect(() => {
-    const prevSetCart = cartStore.setCart;
-    const prevClearCart = cartStore.clearCart;
-
-    cartStore.cart = cart;
-    cartStore.setCart = (meals) => {
-      cartStore.cart = meals;
-      setCart([...meals]);
-    };
-    cartStore.clearCart = () => {
-      setCart([]);
-      setQuantities({});
-    };
-
-    // Cleanup function
-    return () => {
-      cartStore.setCart = prevSetCart;
-      cartStore.clearCart = prevClearCart;
-    };
   }, [cart]);
   // Assign a stable sticker type per meal
   const STICKERS = ["Hot", "Spicy", "Mild", "Special"];
@@ -112,7 +80,15 @@ export default function CartScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Cart</Text>
+      <View style={styles.headerContainer}>
+        <Ionicons name="basket" size={28} color={Colors.primary} />
+        <Text style={styles.header}>My Orders</Text>
+        {cart.length > 0 && (
+          <View style={styles.cartBadge}>
+            <Text style={styles.cartBadgeText}>{cart.length}</Text>
+          </View>
+        )}
+      </View>
       {cart.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>Your cart is empty.</Text>
@@ -202,13 +178,10 @@ export default function CartScreen() {
                 <TouchableOpacity
                   style={styles.deleteBtn}
                   onPress={() => {
-                    const updated = cartStore.cart.filter(
-                      (m) => m.id !== item.id
-                    );
+                    removeFromCart(item.id);
                     const newQuantities = { ...quantities };
                     delete newQuantities[item.id];
                     setQuantities(newQuantities);
-                    cartStore.setCart(updated);
                   }}
                 >
                   <Ionicons name="trash" size={16} color="#fff" />
@@ -254,7 +227,7 @@ export default function CartScreen() {
             </Text>
             <TouchableOpacity
               style={styles.checkoutBtn}
-              onPress={() => (navigation as any).navigate("Checkout")}
+              onPress={() => navigation.navigate("Checkout")}
             >
               <Text style={styles.checkoutBtnText}>Checkout</Text>
             </TouchableOpacity>
@@ -264,7 +237,8 @@ export default function CartScreen() {
             <TouchableOpacity
               style={styles.deleteAllBtn}
               onPress={() => {
-                cartStore.clearCart();
+                clearCart();
+                setQuantities({});
               }}
             >
               <Text style={styles.deleteAllBtnText}>Delete All Orders</Text>
@@ -283,12 +257,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 40,
   },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
+    gap: 8,
+  },
   header: {
     fontSize: 24,
     fontWeight: "bold",
     color: Colors.primary,
-    marginBottom: 16,
-    alignSelf: "center",
+  },
+  cartBadge: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 6,
+  },
+  cartBadgeText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "bold",
   },
   emptyContainer: {
     flex: 1,

@@ -16,8 +16,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
-    "types": ["react-native"],
-    "typeRoots": ["./types"]
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "exclude": [

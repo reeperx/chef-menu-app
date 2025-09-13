@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import {
   FlatList,
@@ -9,11 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { cartStore } from "../store/cartStore";
+import { useCartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import type { Meal } from "../utils/data";
-import { favoriteStore } from "./FavoriteScreen";
+import { useFavoriteStore } from "./FavoriteScreen";
 import Toast from "./Toast";
+
+type RootStackParamList = {
+  mealview: { meal: Meal };
+};
 
 const mealCardStyles = StyleSheet.create({
   card: {
@@ -107,50 +112,11 @@ const mealCardStyles = StyleSheet.create({
 });
 
 export function MealCard({ meal }: { meal: Meal }) {
-  const [inCart, setInCart] = React.useState(() =>
-    cartStore.cart.some((m) => m.id === meal.id)
-  );
-  // State removed as it's no longer needed
-
-  // Listen for cart clear
-  React.useEffect(() => {
-    const origClearCart = cartStore.clearCart;
-    cartStore.clearCart = () => {
-      setInCart(false);
-      if (typeof origClearCart === "function") {
-        origClearCart();
-      }
-    };
-    return () => {
-      cartStore.clearCart = origClearCart;
-    };
-  }, []);
-  React.useEffect(() => {
-    // Patch cartStore.setCart to update badge and inCart
-    const origSetCart = cartStore.setCart;
-    cartStore.setCart = (meals) => {
-      cartStore.cart = meals;
-      setInCart(meals.some((m) => m.id === meal.id));
-      if (
-        typeof origSetCart === "function" &&
-        origSetCart !== cartStore.setCart
-      )
-        origSetCart(meals);
-    };
-
-    // Add interval to check cart state regularly
-    const interval = setInterval(() => {
-      const isItemInCart = cartStore.cart.some((m) => m.id === meal.id);
-      if (isItemInCart !== inCart) {
-        setInCart(isItemInCart);
-      }
-    }, 300);
-
-    return () => {
-      cartStore.setCart = origSetCart;
-      clearInterval(interval);
-    };
-  }, [meal.id, inCart]);
+  const { cart, addToCart, removeFromCart } = useCartStore();
+  const { favorites, addToFavorites, removeFromFavorites } = useFavoriteStore();
+  
+  const inCart = cart.some((m) => m.id === meal.id);
+  const favorite = favorites.some((m) => m.id === meal.id);
   // Discount logic: match MealViewScreen
   const categoryDiscounts: Record<string, number> = {
     Breakfast: 0.1,
@@ -162,30 +128,21 @@ export function MealCard({ meal }: { meal: Meal }) {
   const discountedPrice = meal.price - discountValue;
 
   const toggleCart = () => {
-    let updated;
     if (inCart) {
-      updated = cartStore.cart.filter((m) => m.id !== meal.id);
+      removeFromCart(meal.id);
     } else {
-      // Check if meal already exists in cart
-      const exists = cartStore.cart.some((m) => m.id === meal.id);
-      if (!exists) {
-        updated = [...cartStore.cart, meal];
-        Toast?.show?.({
-          type: "success",
-          text1: "Order added to cart!",
-          text2: `R ${discountedPrice.toFixed(2)}${
-            discount > 0 ? ` (Discount: -R ${discountValue.toFixed(2)})` : ""
-          }`,
-        });
-      } else {
-        updated = cartStore.cart; // No change needed
-      }
+      addToCart(meal);
+      Toast?.show?.({
+        type: "success",
+        text1: "Order added to cart!",
+        text2: `R ${discountedPrice.toFixed(2)}${
+          discount > 0 ? ` (Discount: -R ${discountValue.toFixed(2)})` : ""
+        }`,
+      });
     }
-    cartStore.setCart(updated);
-    setInCart(updated.some((m) => m.id === meal.id));
   };
   const [imgError, setImgError] = React.useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const fallbackImage = require("../assets/images/partial-react-logo.png");
   let imageSource;
   if (
@@ -199,34 +156,13 @@ export function MealCard({ meal }: { meal: Meal }) {
   } else {
     imageSource = fallbackImage;
   }
-  // Favorite logic: check if meal is in global favorites
-  const [favorite, setFavorite] = React.useState(() =>
-    favoriteStore.favorites.some((m) => m.id === meal.id)
-  );
-  React.useEffect(() => {
-    // Patch setFavorites to update badge and local state
-    const origSetFavorites = favoriteStore.setFavorites;
-    favoriteStore.setFavorites = (meals) => {
-      favoriteStore.favorites = meals;
-      setFavorite(meals.some((m) => m.id === meal.id));
-      if (
-        typeof origSetFavorites === "function" &&
-        origSetFavorites !== favoriteStore.setFavorites
-      )
-        origSetFavorites(meals);
-    };
-    return () => {
-      favoriteStore.setFavorites = origSetFavorites;
-    };
-  }, [meal.id]);
+
   const toggleFavorite = () => {
-    let updated;
     if (favorite) {
-      updated = favoriteStore.favorites.filter((m) => m.id !== meal.id);
+      removeFromFavorites(meal.id);
     } else {
-      updated = [...favoriteStore.favorites, meal];
+      addToFavorites(meal);
     }
-    favoriteStore.setFavorites(updated);
   };
   return (
     <View style={[mealCardStyles.card, { marginBottom: 12 }]}>
@@ -262,7 +198,7 @@ export function MealCard({ meal }: { meal: Meal }) {
             padding: 8,
             opacity: 0.6,
           }}
-          onPress={() => (navigation as any).navigate("mealview", { meal })}
+          onPress={() => navigation.navigate("mealview", { meal })}
         >
           <Ionicons name="eye-outline" size={28} color={Colors.primary} />
         </TouchableOpacity>

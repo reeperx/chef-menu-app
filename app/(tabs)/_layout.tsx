@@ -2,8 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { favoriteStore } from "../../components/FavoriteScreen";
-import { cartStore } from "../../store/cartStore";
+import { useFavoriteStore } from "../../components/FavoriteScreen";
+import { useCartStore } from "../../store/cartStore";
 import { Colors } from "../../utils/Colors";
 
 function FavoriteTabIcon({
@@ -15,28 +15,9 @@ function FavoriteTabIcon({
   size: number;
   focused: boolean;
 }) {
-  const [count, setCount] = React.useState(favoriteStore.favorites.length);
-  React.useEffect(() => {
-    // Patch setFavorites to always update badge
-    const origSetFavorites = favoriteStore.setFavorites;
-    favoriteStore.setFavorites = (meals) => {
-      favoriteStore.favorites = meals;
-      setCount(meals.length);
-      if (
-        typeof origSetFavorites === "function" &&
-        origSetFavorites !== favoriteStore.setFavorites
-      )
-        origSetFavorites(meals);
-    };
-    // Listen for manual favorite changes (e.g. from other screens)
-    const interval = setInterval(() => {
-      setCount(favoriteStore.favorites.length);
-    }, 300);
-    return () => {
-      clearInterval(interval);
-      favoriteStore.setFavorites = origSetFavorites;
-    };
-  }, []);
+  const { favorites } = useFavoriteStore();
+  const count = favorites.length;
+  
   return (
     <View>
       <Ionicons
@@ -83,29 +64,9 @@ function CartTabIcon({
   size: number;
   focused: boolean;
 }) {
-  const [count, setCount] = React.useState(cartStore.cart.length);
-  React.useEffect(() => {
-    // Patch setCart to always update badge
-    const origSetCart = cartStore.setCart;
-    cartStore.setCart = (meals) => {
-      cartStore.cart = meals;
-      setCount(meals.length);
-      if (
-        typeof origSetCart === "function" &&
-        origSetCart !== cartStore.setCart
-      ) {
-        origSetCart(meals);
-      }
-    };
-    // Listen for manual cart changes (e.g. from other screens)
-    const interval = setInterval(() => {
-      setCount(cartStore.cart.length);
-    }, 300);
-    return () => {
-      clearInterval(interval);
-      cartStore.setCart = origSetCart;
-    };
-  }, []);
+  const { cart } = useCartStore();
+  const count = cart.length;
+  
   return (
     <View>
       <Ionicons

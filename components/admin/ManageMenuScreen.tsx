@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   StyleSheet,
@@ -26,15 +27,28 @@ export default function ManageMenuScreen() {
   );
 
   const handleDeleteItem = (mealId: string) => {
-    // Show confirmation dialog
-    if (confirm("Are you sure you want to delete this item?")) {
-      deleteMenuItem(mealId);
-      Toast.show({
-        type: "success",
-        text1: "Item deleted",
-        text2: "Menu item has been deleted successfully.",
-      });
-    }
+    Alert.alert(
+      "Delete Menu Item",
+      "Are you sure you want to delete this item?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => {
+            deleteMenuItem(mealId);
+            Toast.show({
+              type: "success",
+              text1: "Item deleted",
+              text2: "Menu item has been deleted successfully.",
+            });
+          },
+        },
+      ]
+    );
   };
 
   return (
