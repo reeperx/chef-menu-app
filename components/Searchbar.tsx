@@ -10,13 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { responsiveHeight } from "react-native-responsive-dimensions";
 import { meals } from "../utils/data";
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#f2f3f2",
-    height: responsiveHeight(5),
+    height: 40,
     borderRadius: 5,
     flexDirection: "row",
     alignItems: "center",

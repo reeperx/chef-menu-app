@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Dimensions, FlatList, Image, StyleSheet, View } from "react-native";
-import { responsiveHeight } from "react-native-responsive-dimensions";
 
 const bannerImages = [
   require("../assets/images/banner.png"),
@@ -60,7 +59,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   bannerImage: {
-    height: responsiveHeight(15),
+    height: 120,
     borderRadius: 10,
   },
 });
