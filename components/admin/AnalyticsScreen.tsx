@@ -41,7 +41,7 @@ export default function AnalyticsScreen() {
           <View style={styles.overviewCard}>
             <Ionicons name="cash" size={24} color={Colors.primary} />
             <Text style={styles.overviewValue}>
-              ${analytics.totalRevenue.toFixed(2)}
+              R{analytics.totalRevenue.toFixed(2)}
             </Text>
             <Text style={styles.overviewLabel}>Total Revenue</Text>
           </View>

@@ -1,4 +1,4 @@
-// Utility to set the Android navigation bar color using expo-system-ui
+
 import * as SystemUI from "expo-system-ui";
 import { Platform } from "react-native";
 
