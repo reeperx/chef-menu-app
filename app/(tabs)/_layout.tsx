@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useFavoriteStore } from "../../components/FavoriteScreen";
+import { useFavoriteStore } from "../../store/favoriteStore";
 import { useCartStore } from "../../store/cartStore";
 import { Colors } from "../../utils/Colors";
 

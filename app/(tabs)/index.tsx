@@ -3,13 +3,14 @@ import Searchbar from "@/components/Searchbar";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { Image, SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import Filter from "../../components/Filter";
 import { VerticalMealList } from "../../components/Meal";
 import FloatingActionButton from "../../components/common/FloatingActionButton";
 import { useAuthStore } from "../../store/authStore";
 import { meals } from "../../utils/data";
 import { setNavigationBarColor } from "../../utils/setNavigationBar";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {

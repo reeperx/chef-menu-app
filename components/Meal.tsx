@@ -13,7 +13,7 @@ import {
 import { useCartStore } from "../store/cartStore";
 import { Colors } from "../utils/Colors";
 import type { Meal } from "../utils/data";
-import { useFavoriteStore } from "./FavoriteScreen";
+import { useFavoriteStore } from "../store/favoriteStore";
 import Toast from "./Toast";
 
 type RootStackParamList = {
